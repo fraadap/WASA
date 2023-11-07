@@ -1,0 +1,616 @@
+openapi: 3.0.3 
+info:
+  title: WASAPhoto
+  description: |-
+    Keep in touch with your friends by sharing photos of special moments, 
+    thanks to WASAPhoto! You can upload your photos directly from your PC, 
+    and they will be visible to everyone following you.
+  version: 1.0.0
+
+tags: 
+  - name: login
+    description: 'Operations related to Login'
+  - name: user
+    description: 'Operations related to user profile management'
+  - name: follow
+    description: 'Management of follow relationships between users.'
+  - name: photo
+    description: 'Operations related to uploading, viewing, and managing user photos.'
+  - name: comment
+    description: 'Operations for managing comments associated with photos.'
+  - name: like
+    description: 'Management of user interactions through the like action on photos'
+  - name: ban
+    description: 'Management of restrictions imposed by users on specific users.'
+
+paths: 
+  /session:
+    post:
+      tags: 
+        - login
+      summary: Logs in the user 
+      description: |-
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin 
+      requestBody:
+        description: Username
+        content:
+          application/json: 
+            schema:
+              description: 'Username'
+              type: object 
+              properties:
+                name:
+                  type: string 
+                  example: Maria 
+                  pattern: '^.*?$' 
+                  minLength: 3 
+                  maxLength: 16
+        required: true 
+      responses:
+        '201':
+          description: User log-in action successful 
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/User/properties/userID'
+
+  /users/{userID}:
+    parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+    get:
+      tags:
+        - user
+      operationId: getUserProfile
+      summary: 'Get User Profile'
+      description: 'Get a user profile by userID'
+      responses:
+        '201':
+          description: 'user returned'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 'Invalid userID'
+        '404':
+          description: 'userID not found'
+    put:
+      tags:
+        - user
+      operationId: setMyUserName
+      summary: 'Set my Username'
+      description: 'Set an username for the user'
+      requestBody:
+        description: 'New Username' 
+        content:
+          application/json: 
+            schema:
+              type: string 
+              description: 'Username'
+              example: Maria 
+              pattern: '^.*?$' 
+              minLength: 3 
+              maxLength: 16
+        required: true 
+      responses:
+        '200':
+          description: 'Ok, Username setted'
+        '400':
+          description: 'Invalid userID'
+        '404':
+          description: 'UserID not found'
+
+  /users/{userID}/followers/:
+    post:
+      tags: 
+        - follow
+      operationId: followUser
+      summary: 'Follow a user'
+      description: 'Follow a user with a specific userID'
+      parameters:
+      - name: userID
+        description: 'User Identifier that wants to follow another user'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      requestBody:
+        description: 'Follow object with userID and userID to follow'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Follow'
+      responses:
+        '201':
+          description: 'User followed successfully and follow data structure returned'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/Follow/properties/followID'
+
+  /users/{userID}/followers/{followID}:  
+    delete:
+      tags: 
+        - follow
+      operationId: unfollowUser
+      summary: 'Unfollow a user'
+      description: 'Unfollow a user by followID'
+      parameters:
+      - name: userID
+        description: 'User identifier that want to do the unfollow'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      - name: followID
+        description: 'Identifier code of the follow relation'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Follow/properties/followID'
+      responses:
+        '204':
+          description: 'User unfollowed successfully'
+        '404':
+          description: 'Follow relationship not found'
+        '400':
+          description: 'Bad request - Invalid data provided'
+
+  /users/{userID}/photos:
+    parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+    get:
+      tags: 
+        - photo
+      operationId: getMyStream
+      summary: 'Get my stream of photos'
+      description: 'Get stream of all photos of a specific user'
+      responses:
+        '201':
+          description: 'All photos of a specific user returned'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User/properties/photos'
+        '400':
+          description: 'Invalid userID'
+        '404':
+          description: 'userID not found'
+    post: 
+      tags: 
+        - photo
+      operationId: uploadPhoto
+      summary: 'Upload a photo'
+      description: 'Upload a new photo'
+      requestBody:
+        description: 'Photo details'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Photo'
+        required: true
+      responses:  
+        '201':
+          description: 'Photo uploaded successfully and photoID returned'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/Photo/properties/photoID'
+        '400':
+          description: 'Bad request - Invalid data provided'
+
+  /users/{userID}/photos/{photoID}:  
+    delete:
+      tags: 
+        - photo
+      operationId: deletePhoto
+      summary: 'Delete a photo'
+      description: 'Delete a specific photo'
+      parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      - name: photoID
+        description: 'Photo Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Photo/properties/photoID'
+      responses:  
+        '204':
+          description: 'Photo deleted successfully'
+        '400':
+          description: 'Bad request - Invalid data provided'
+        '404':
+          description: 'UserID or PhotoID not found'
+
+  /users/{userID}/photos/{photoID}/comments:
+    post:
+      tags: 
+        - comment
+      operationId: commentPhoto
+      summary: 'Comment a photo'
+      description: 'Post a comment in the {photoID} photo'
+      parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      - name: photoID
+        description: 'Photo Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Photo/properties/photoID'
+      requestBody:
+        description: 'Data structure containing information about a comment, including comment text, author details, and timestamp'
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/Comment'
+      responses:
+        '201':
+          description: "Photo commented successfully and commentID returned"
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/Comment/properties/commentID'
+
+  /users/{userID}/photos/{photoID}/comments/{commentID}:  
+    delete:
+      tags: 
+        - comment
+      operationId: uncommentPhoto
+      summary: 'Comment a photo'
+      description: 'Remove a comment in the {photoID} photo with the authenticated user'
+      parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      - name: photoID
+        description: 'Photo Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Photo/properties/photoID'
+      - name: commentID
+        description: 'Comment Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Comment/properties/commentID'
+      responses:
+        '204':
+          description: 'Photo uncommented successfully'
+        '400':
+          description: 'Bad request - Invalid data provided'
+        '404':
+          description: 'userID, photoID or commentID not found'     
+
+  /users/{userID}/photos/{photoID}/likes:
+    post:
+      tags:
+        - like
+      operationId: likePhoto
+      summary: 'Like a photo'
+      description: 'Like the {photoID} photo with the authenticated user'
+      parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      - name: photoID
+        description: 'Photo Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Photo/properties/photoID'
+      requestBody:
+        description: 'Data structure containing information about a like including author details, and timestamp'
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/Like'
+      responses:
+        '201':
+          description: 'Photo liked successfully and likeID returned'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/Like/properties/likeID'
+        '400':
+          description: 'Bad request - Invalid data provided'
+        '404':
+          description: 'UserID or PhotoID not found'
+          
+  /users/{userID}/photos/{photoID}/likes/{likeID}:
+    delete:
+      tags: 
+        - like
+      operationId: unlikePhoto
+      summary: 'Unlike a photo'
+      description: 'Remove like from the {photoID} photo'
+      parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'      
+      - name: photoID
+        description: 'Photo Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Photo/properties/photoID'
+      - name: likeID
+        description: 'Like Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Like/properties/userID'
+      responses:
+        '204':
+          description: 'Photo unliked successfully'
+        '400':
+          description: 'Bad request - Invalid data provided'
+        '404':
+          description: 'UserID, PhotoID or LikeID not found'
+
+  /users/{userID}/bans:
+    post:
+      tags: 
+        - ban
+      operationId: banUser
+      summary: 'Ban a user'
+      description: 'Ban a user with a specific userID'
+      parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      requestBody:
+        description: 'Informations about ban'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ban'
+      responses:
+        '201':
+          description: 'User banned successfully and banID returned'
+          content:
+            application/json: 
+              schema:
+                 $ref: '#/components/schemas/Ban/properties/banID'
+        '400':
+          description: 'Invalid userID'
+        '404':
+          description: 'UserID not found'
+
+  /users/{userID}/bans/{banID}:
+    delete:
+      tags: 
+        - ban
+      operationId: unbanUser
+      summary: 'Unban a user'
+      description: 'Unban a user with a specific userID'
+      parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      - name: banID
+        description: 'Ban Identifier'
+        in: path
+        required: true
+        schema: 
+           $ref: '#/components/schemas/Ban/properties/banID'
+      responses:
+        '204':
+          description: 'User unbanned successfully'
+        '400':
+          description: 'Bad request - Invalid data provided'
+        '404':
+          description: 'UserID or banID not found'
+  
+components:
+  schemas:
+    User:
+      description: 'User structure'
+      type: object
+      required:
+        - userID
+        - username
+      properties:
+        userID:
+          type: integer
+          description: 'User identifier'
+          example: 126
+          minimum: 1
+        username:
+          type: string
+          description: "Username"
+          pattern: '^.*?$'
+          minLength: 3
+          maxLength: 16
+          example: 'Maria'
+        photos:
+          type: array
+          description: "List of User's photos"
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Photo'
+        ban:
+          type: array
+          description: 'List of users banned by the user'
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Ban'
+        following:
+          type: array
+          description: 'List of users followed by the user'
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Follow'
+            
+    Follow:
+      type: object
+      description: 'Follow structure'
+      required:
+        - followedID
+      properties:
+        followID:
+          type: integer
+          description: "follow relation identifier"
+          example: 444
+        followedID:
+          type: integer
+          description: 'User identifier of the user followed'
+          example: 999
+          minimum: 1         
+        timestamp:
+          type: string
+          format: date-time
+          description: 'Timestamp of when the user followed the other user'
+          example: '2023-11-06T11:08:23Z'
+
+    Photo:
+      type: object
+      description: "Photo's structure"
+      required:
+        - path
+      properties:
+        photoID:
+          type: integer
+          description: 'Photo identifier'
+          example: 222
+          minimum: 1  
+        path:
+          type: string
+          format: binary
+          description: 'Multimedia content representing the image file'
+          minLength: 13
+          maxLength: 40
+          pattern: '^.*\.(png|jpg|jpeg)$'
+        timestamp:
+          type: string
+          format: date-time
+          example: '2023-11-06T11:08:23Z'
+          description: 'Timestamp of uploading a photo'
+        comments:
+          type: array
+          description: 'Photo comments'
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Comment'
+        likes:
+          type: array
+          description: 'Photo likes'
+          minItems: 0 
+          items:
+            $ref: '#/components/schemas/Like'
+
+    Comment:
+      type: object
+      description: "Comment's structure"
+      required:
+        - text
+      properties:
+        commentID:
+          type: integer
+          description: 'Comment identifier'
+          example: 333
+          minimum: 1
+        text:
+          type: string
+          description: 'Text of a comment'
+          minLength: 3
+          maxLength: 300
+          example: 'Great API!'
+          pattern: '^.*?$'
+        userID:
+          $ref: '#/components/schemas/User/properties/userID'
+        timestamp:
+          type: string
+          format: date-time
+          minLength: 20
+          maxLength: 20
+          description: 'Timestamp of when the comment was posted'
+          example: '2023-11-06T11:08:23Z'
+
+    Like:
+      type: object
+      description: "Like's structure"
+      properties:
+        likeID:
+          type: integer
+          description: 'Like identifier'
+          example: 333
+          minimum: 1
+        userID:
+          $ref: '#/components/schemas/User/properties/userID'
+        timestamp: 
+          type: string
+          format: date-time
+          description: 'Timestamp of submitting a Like'
+          example: '2023-11-06T11:08:23Z'
+
+    Ban:
+      type: object
+      description: 'Banned user by a specific user'
+      required:
+        - userIDBanned
+      properties:
+        banID:
+          type: integer
+          description: 'Ban identifier'
+          example: 444
+          minimum: 1
+        userIDBanned:
+          $ref: '#/components/schemas/User/properties/userID'
+        timestamp: 
+          type: string
+          format: date-time
+          description: 'Timestamp of ban'
+          example: '2023-11-06T11:08:23Z'
+
+  securitySchemes:
+    bearerAuth:
+      description: 'Bearer Authentication'
+      type: http
+      scheme: bearer
+      
+
+security:
+  - bearerAuth: []
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/fraadap/WASAPhoto/1.0.0
