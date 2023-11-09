@@ -102,7 +102,11 @@ paths:
         required: true 
       responses:
         '200':
-          description: 'Ok, Username setted'
+          description: 'username setted and user returned'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
           description: 'Invalid userID'
         '404':
@@ -179,7 +183,7 @@ paths:
       summary: 'Get my stream of photos'
       description: 'Get stream of all photos of a specific user'
       responses:
-        '201':
+        '200':
           description: 'All photos of a specific user returned'
           content:
             application/json:
@@ -465,18 +469,21 @@ components:
           type: array
           description: "List of User's photos"
           minItems: 0
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/Photo'
         ban:
           type: array
           description: 'List of users banned by the user'
           minItems: 0
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/Ban'
         following:
           type: array
           description: 'List of users followed by the user'
           minItems: 0
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/Follow'
             
@@ -500,6 +507,8 @@ components:
           format: date-time
           description: 'Timestamp of when the user followed the other user'
           example: '2023-11-06T11:08:23Z'
+          minLength: 20
+          maxLength: 20
 
     Photo:
       type: object
@@ -524,16 +533,20 @@ components:
           format: date-time
           example: '2023-11-06T11:08:23Z'
           description: 'Timestamp of uploading a photo'
+          minLength: 20
+          maxLength: 20
         comments:
           type: array
           description: 'Photo comments'
           minItems: 0
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/Comment'
         likes:
           type: array
           description: 'Photo likes'
-          minItems: 0 
+          minItems: 0
+          maxItems: 1000 
           items:
             $ref: '#/components/schemas/Like'
 
@@ -581,6 +594,8 @@ components:
           format: date-time
           description: 'Timestamp of submitting a Like'
           example: '2023-11-06T11:08:23Z'
+          minLength: 20
+          maxLength: 20
 
     Ban:
       type: object
@@ -600,6 +615,8 @@ components:
           format: date-time
           description: 'Timestamp of ban'
           example: '2023-11-06T11:08:23Z'
+          minLength: 20
+          maxLength: 20
 
   securitySchemes:
     bearerAuth:
