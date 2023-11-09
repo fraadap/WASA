@@ -43,6 +43,7 @@ paths:
               type: object 
               properties:
                 name:
+                  description: 'Username'
                   type: string 
                   example: Maria 
                   pattern: '^.*?$' 
