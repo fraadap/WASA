@@ -64,15 +64,13 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
-	err := db.QueryRow(`SELECT id FROM user`).Scan(&tableName)
-	logger.Println(err)
+	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='user'; `).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
-		logger.Println("NOROWS")
-		sqlStmt := `CREATE TABLE user (id INTEGER NOT NULL PRIMARY KEY, username TEXT);`
-		_, err = db.Exec(sqlStmt)
+		err = createTables(db)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
+		logger.Println("Database's tables created")
 	}
 
 	return &appdbimpl{
