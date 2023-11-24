@@ -57,7 +57,9 @@ paths:
             application/json: 
               schema:
                 $ref: '#/components/schemas/User/properties/userID'
-
+        '400':
+          description: 'Bad request - Invalid data provided'
+          
   /users/{userID}:
     parameters:
       - name: userID
@@ -109,11 +111,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          description: 'Invalid userID'
-        '404':
-          description: 'UserID not found'
+          description: 'Invalid userID or username already took'
 
-  /users/{userID}/followers/:
+  /users/{userID}/followers:
     post:
       tags: 
         - follow
@@ -140,6 +140,8 @@ paths:
             application/json: 
               schema:
                 $ref: '#/components/schemas/Follow/properties/followID'
+        '400':
+          description: 'Bad request - Invalid data provided'
 
   /users/{userID}/followers/{followID}:  
     delete:
@@ -182,7 +184,7 @@ paths:
         - photo
       operationId: getMyStream
       summary: 'Get my stream of photos'
-      description: 'Get stream of all photos of a specific user'
+      description: 'Get stream's specific user'
       responses:
         '200':
           description: 'All photos of a specific user returned'
@@ -193,7 +195,7 @@ paths:
         '400':
           description: 'Invalid userID'
         '404':
-          description: 'userID not found'
+          description: 'userID or followID not found'
     post: 
       tags: 
         - photo
@@ -278,6 +280,8 @@ paths:
             application/json: 
               schema:
                 $ref: '#/components/schemas/Comment/properties/commentID'
+        '400':
+          description: 'Bad request - Invalid data provided'
 
   /users/{userID}/photos/{photoID}/comments/{commentID}:  
     delete:
@@ -348,8 +352,6 @@ paths:
                 $ref: '#/components/schemas/Like/properties/likeID'
         '400':
           description: 'Bad request - Invalid data provided'
-        '404':
-          description: 'UserID or PhotoID not found'
           
   /users/{userID}/photos/{photoID}/likes/{likeID}:
     delete:
@@ -414,8 +416,6 @@ paths:
                  $ref: '#/components/schemas/Ban/properties/banID'
         '400':
           description: 'Invalid userID'
-        '404':
-          description: 'UserID not found'
 
   /users/{userID}/bans/{banID}:
     delete:
@@ -473,14 +473,14 @@ components:
           maxItems: 1000
           items:
             $ref: '#/components/schemas/Photo'
-        ban:
+        bans:
           type: array
           description: 'List of users banned by the user'
           minItems: 0
           maxItems: 1000
           items:
             $ref: '#/components/schemas/Ban'
-        following:
+        followings:
           type: array
           description: 'List of users followed by the user'
           minItems: 0

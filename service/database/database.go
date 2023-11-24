@@ -43,6 +43,14 @@ import (
 type AppDatabase interface {
 	GetName() (string, error)
 	SetName(name string) error
+	Login(username string) (int, error)
+	SetUsername(id int, username string) error
+	NewFollow(id int, followedId int, timestamp string) (int, error)
+	DeleteFollow(id int, followId int) error
+	NewBan(id int, userIDBanned int, timeStamp string) (int, error)
+	DeleteBan(id int, banId int) error
+	NewPhoto(id int, path string, timestamp string) (int, error)
+	DeletePhoto(id int, photoId int) error
 
 	Ping() error
 }
@@ -64,7 +72,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='user'; `).Scan(&tableName)
+	//db.Exec("DROP TABLE example_table")
+	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table'; `).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		err = createTables(db)
 		if err != nil {
@@ -72,6 +81,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 		}
 		logger.Println("Database's tables created")
 	}
+
+	db.Exec("PRAGMA foreign_keys = ON;") // abilitare le foreign keys
 
 	return &appdbimpl{
 		c: db,
