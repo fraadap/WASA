@@ -24,12 +24,12 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/users/:userID/photos/:photoID", rt.deletePhoto) // 8)fatto
 
 	// comments section
-	rt.router.POST("/users/:userID/photos/:photoID/comments", rt.commentPhoto)                // 9)
-	rt.router.DELETE("/users/:userID/photos/:photoID/comments/:commentID", rt.uncommentPhoto) // 10)
+	rt.router.POST("/users/:userID/photos/:photoID/comments", rt.commentPhoto)                // 9)fatto
+	rt.router.DELETE("/users/:userID/photos/:photoID/comments/:commentID", rt.uncommentPhoto) // 10)fatto
 
 	// likes section
-	rt.router.POST("/users/:userID/photos/:photoID/likes", rt.likePhoto)             // 11)
-	rt.router.DELETE("/users/:userID/photos/:photoID/likes/:likeID", rt.unlikePhoto) // 12)
+	rt.router.POST("/users/:userID/photos/:photoID/likes", rt.likePhoto)             // 11)fatto
+	rt.router.DELETE("/users/:userID/photos/:photoID/likes/:likeID", rt.unlikePhoto) // 12)fatto
 
 	// bans section
 	rt.router.POST("/users/:userID/bans", rt.banUser)            // 5) fatto

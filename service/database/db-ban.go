@@ -23,3 +23,27 @@ func (db *appdbimpl) NewBan(id int, userIDBanned int, timeStamp string) (int, er
 	}
 
 }
+
+func (db *appdbimpl) DeleteBan(id int, banID int) error {
+
+	ris, err := db.c.Exec("DELETE FROM ban WHERE userID=? AND id=?", id, banID)
+
+	if err != nil {
+		return err
+	} else {
+		rows, _ := ris.RowsAffected()
+		if rows == 0 {
+			err1 := sql.ErrNoRows
+			return err1
+		}
+	}
+
+	return nil
+
+}
+
+func (db *appdbimpl) IsBanned(userID int, bannedID int) (bool, error) {
+	var ban bool
+	err := db.c.QueryRow("SELECT COUNT(*)=1 FROM ban WHERE userID=? AND banned=?", userID, bannedID).Scan(&ban)
+	return ban, err
+}

@@ -56,15 +56,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 }
 
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	r.URL.Query().Get("nome")
-
-	res, _ := rt.db.GetName()
-	w.Header().Set("content-type", "text/plain")
-	json.NewEncoder(w).Encode(res)
-
-	if res == "" {
-
-	}
+	//
 }
 
 // struttura dell'utente

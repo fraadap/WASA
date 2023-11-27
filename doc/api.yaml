@@ -142,6 +142,8 @@ paths:
                 $ref: '#/components/schemas/Follow/properties/followID'
         '400':
           description: 'Bad request - Invalid data provided'
+        '403':
+          description: 'Forbidden - user banned'
 
   /users/{userID}/followers/{followID}:  
     delete:
@@ -195,7 +197,7 @@ paths:
         '400':
           description: 'Invalid userID'
         '404':
-          description: 'userID or followID not found'
+          description: 'userID not found'
     post: 
       tags: 
         - photo
@@ -282,6 +284,8 @@ paths:
                 $ref: '#/components/schemas/Comment/properties/commentID'
         '400':
           description: 'Bad request - Invalid data provided'
+        '403':
+          description: 'Forbidden - user banned'
 
   /users/{userID}/photos/{photoID}/comments/{commentID}:  
     delete:
@@ -352,6 +356,8 @@ paths:
                 $ref: '#/components/schemas/Like/properties/likeID'
         '400':
           description: 'Bad request - Invalid data provided'
+        '403':
+          description: 'Forbidden - user banned'  
           
   /users/{userID}/photos/{photoID}/likes/{likeID}:
     delete:
@@ -524,10 +530,9 @@ components:
           minimum: 1  
         path:
           type: string
-          format: binary
-          description: 'Multimedia content representing the image file'
+          description: 'Local or remote url image file'
           minLength: 13
-          maxLength: 40
+          maxLength: 100
           pattern: '^.*\.(png|jpg|jpeg)$'
         timestamp:
           type: string
