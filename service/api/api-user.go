@@ -6,19 +6,27 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
-// getUserProfile is
+// getUserProfile restituisce le foto dell'utente in ordine cronologico, quante foto ha, followers e following
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	id, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	w.Header().Set("content-type", "text/plain")
-	_ = json.NewEncoder(w).Encode(id)
 
+	pr, err := rt.db.GetProfile(id)
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("content-type", "text/plain")
+	_ = json.NewEncoder(w).Encode(pr)
 }
 
 func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -34,7 +42,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	var u user
+	var u structs.User
 	err0 := json.Unmarshal(body, &u)
 
 	if err0 != nil || u.Username == "" {
@@ -44,7 +52,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 	err1 := rt.db.SetUsername(id, u.Username)
 	if err1 != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
@@ -57,13 +65,4 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	//
-}
-
-// struttura dell'utente
-type user struct {
-	Id         int      `json:"userID"`     // id utente
-	Username   string   `json:"username"`   // username utente
-	Photos     []photo  `json:"photos"`     // array di foto dell'utente
-	Followings []follow `json:"followings"` // array di seguiti dell'utente
-	Bans       []ban    `json:"bans"`       // array di ban	dell'utente
 }

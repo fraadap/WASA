@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -26,7 +27,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	var ph photo
+	var ph structs.Photo
 	err0 := json.Unmarshal(body, &ph)
 
 	if ph.TimeStamp == "" {
@@ -44,6 +45,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	var err1 error
 	ph.PhotoID, err1 = rt.db.NewPhoto(id, ph.Path, ph.TimeStamp)
+	ph.UserID = id
 	if err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -75,13 +77,4 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
-}
-
-// struttura della foto
-type photo struct {
-	PhotoID   int       `json:"photoID"`   // id della foto
-	Path      string    `json:"path"`      // path della foto
-	TimeStamp string    `json:"timestamp"` // timestamp di quando è stata postata la foto
-	Comments  []comment `json:"comments"`  // array di commenti della foto
-	Likes     []like    `json:"likes"`     // array di like della foto
 }

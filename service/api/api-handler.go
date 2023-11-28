@@ -11,12 +11,12 @@ func (rt *_router) Handler() http.Handler {
 
 	// users section
 	rt.router.POST("/session", rt.doLogin)             // 1)fatto, manca la parte di sicurezza con variabile di sessione
-	rt.router.GET("/users/:userID", rt.getUserProfile) // 13)
+	rt.router.GET("/users/:userID", rt.getUserProfile) // 13)fatto
 	rt.router.PUT("/users/:userID", rt.setMyUsername)  // 2)fatto
 
 	// followers section
-	rt.router.POST("/users/:userID/followers", rt.followUser)               // 3)fatto
-	rt.router.DELETE("/users/:userID/followers/:followID", rt.unfollowUser) // 4)fatto
+	rt.router.POST("/users/:userID/follow", rt.followUser)               // 3)fatto
+	rt.router.DELETE("/users/:userID/follow/:followID", rt.unfollowUser) // 4)fatto
 
 	// photos section
 	rt.router.GET("/users/:userID/photos", rt.getMyStream)             // 14)

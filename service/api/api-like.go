@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -26,7 +27,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	var li like
+	var li structs.Like
 
 	// conversione del body in struct like
 	err0 := json.Unmarshal(body, &li)
@@ -35,6 +36,8 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	li.PhotoID = photoID
 
 	// generazione timestamp se assente altimenti controllo del formato
 	if li.TimeStamp == "" {
@@ -106,10 +109,4 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	//risposta 204
 	w.WriteHeader(http.StatusNoContent)
-}
-
-type like struct {
-	LikeID    int    `json:"likeID"`    // id del commento
-	UserID    int    `json:"userID"`    // owner del commento
-	TimeStamp string `json:"timestamp"` // timestamp di quando è stato postato il commento
 }

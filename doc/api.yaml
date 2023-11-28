@@ -80,7 +80,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/Profile'
         '400':
           description: 'Invalid userID'
         '404':
@@ -112,8 +112,10 @@ paths:
                 $ref: '#/components/schemas/User'
         '400':
           description: 'Invalid userID or username already took'
+        '404':
+          description: 'userID not found'
 
-  /users/{userID}/followers:
+  /users/{userID}/follow:
     post:
       tags: 
         - follow
@@ -186,14 +188,14 @@ paths:
         - photo
       operationId: getMyStream
       summary: 'Get my stream of photos'
-      description: 'Get stream's specific user'
+      description: "Get stream's specific user"
       responses:
         '200':
-          description: 'All photos of a specific user returned'
+          description: 'Stream of a specific user returned'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User/properties/photos'
+                $ref: '#/components/schemas/Stream'
         '400':
           description: 'Invalid userID'
         '404':
@@ -472,28 +474,7 @@ components:
           minLength: 3
           maxLength: 16
           example: 'Maria'
-        photos:
-          type: array
-          description: "List of User's photos"
-          minItems: 0
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/Photo'
-        bans:
-          type: array
-          description: 'List of users banned by the user'
-          minItems: 0
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/Ban'
-        followings:
-          type: array
-          description: 'List of users followed by the user'
-          minItems: 0
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/Follow'
-            
+
     Follow:
       type: object
       description: 'Follow structure'
@@ -504,7 +485,9 @@ components:
           type: integer
           description: "follow relation identifier"
           example: 444
-        followedID:
+        userID:
+          $ref: '#/components/schemas/User/properties/userID' 
+        followed:
           type: integer
           description: 'User identifier of the user followed'
           example: 999
@@ -528,6 +511,8 @@ components:
           description: 'Photo identifier'
           example: 222
           minimum: 1  
+        userID:
+          $ref: '#/components/schemas/User/properties/userID' 
         path:
           type: string
           description: 'Local or remote url image file'
@@ -541,20 +526,6 @@ components:
           description: 'Timestamp of uploading a photo'
           minLength: 20
           maxLength: 20
-        comments:
-          type: array
-          description: 'Photo comments'
-          minItems: 0
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/Comment'
-        likes:
-          type: array
-          description: 'Photo likes'
-          minItems: 0
-          maxItems: 1000 
-          items:
-            $ref: '#/components/schemas/Like'
 
     Comment:
       type: object
@@ -567,6 +538,8 @@ components:
           description: 'Comment identifier'
           example: 333
           minimum: 1
+        photoID:
+          $ref: '#/components/schemas/Photo/properties/photoID' 
         text:
           type: string
           description: 'Text of a comment'
@@ -593,6 +566,8 @@ components:
           description: 'Like identifier'
           example: 333
           minimum: 1
+        photoID:
+          $ref: '#/components/schemas/Photo/properties/photoID'
         userID:
           $ref: '#/components/schemas/User/properties/userID'
         timestamp: 
@@ -614,7 +589,9 @@ components:
           description: 'Ban identifier'
           example: 444
           minimum: 1
-        userIDBanned:
+        userID:
+          $ref: '#/components/schemas/User/properties/userID'        
+        banned:
           $ref: '#/components/schemas/User/properties/userID'
         timestamp: 
           type: string
@@ -623,6 +600,82 @@ components:
           example: '2023-11-06T11:08:23Z'
           minLength: 20
           maxLength: 20
+    
+    Profile:
+      type: object
+      description: 'Profile of a specific user'
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        photos:
+          type: array
+          description: "User's photos"
+          minItems: 0
+          maxItems: 1000 
+          items:
+            $ref: '#/components/schemas/Photo'
+        followers:
+          type: array
+          description: "User's followers"
+          minItems: 0
+          maxItems: 1000 
+          items:
+            $ref: '#/components/schemas/User'
+        followings:
+          type: array
+          description: "User's followings"
+          minItems: 0
+          maxItems: 1000 
+          items:
+            $ref: '#/components/schemas/User'
+        nPhotos:
+          type: integer
+          description: 'Number of photos'
+          example: 12
+          minimum: 0
+          
+    Stream:
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        photos:
+          type: array
+          description: "Stream's photos"
+          minItems: 0
+          maxItems: 1000 
+          items:
+            $ref: '#/components/schemas/PhotoInfo'
+    
+    PhotoInfo:
+      properties:
+        photo:
+          $ref: '#/components/schemas/Photo'
+        nLikes:
+          type: integer
+          description: "Number of like of a Photo"
+          example: 22
+          minimum: 0
+        likes:
+          type: array
+          description: "Photo's likes"
+          minItems: 0
+          maxItems: 1000 
+          items:
+            $ref: '#/components/schemas/Like'
+        nComments:
+          type: integer
+          description: "Number of like of a Photo"
+          example: 82
+          minimum: 0
+        comments:
+          type: array
+          description: "Photo's comments"
+          minItems: 0
+          maxItems: 1000 
+          items:
+            $ref: '#/components/schemas/Comment'
+        
+
 
   securitySchemes:
     bearerAuth:

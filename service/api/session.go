@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -15,7 +16,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	var u user
+	var u structs.User
 	err = json.Unmarshal(body, &u)
 
 	if err != nil {

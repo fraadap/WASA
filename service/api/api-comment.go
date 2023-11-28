@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -26,10 +27,16 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	var com comment
+	var com structs.Comment
 
 	// conversione del body in struct comment
 	err0 := json.Unmarshal(body, &com)
+
+	// controllo se l'utente è bannato dalla persona proprietaria della photo
+	if err0 != nil || com.Text == "" || com.UserID == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	// generazione timestamp se assente altimenti controllo del formato
 	if com.TimeStamp == "" {
@@ -40,11 +47,8 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	// controllo se l'utente è bannato dalla persona proprietaria della photo
-	if err0 != nil || com.Text == "" || com.UserID == 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	com.PhotoID = photoID
+
 	userIDPhoto, err := rt.db.UserIDByPhoto(photoID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -105,11 +109,4 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 
 	//risposta 204
 	w.WriteHeader(http.StatusNoContent)
-}
-
-type comment struct {
-	CommentID int    `json:"commentID"` // id del commento
-	Text      string `json:"text"`      // testo del commento
-	UserID    int    `json:"userID"`    //owner del commento
-	TimeStamp string `json:"timestamp"` // timestamp di quando è stato postato il commento
 }

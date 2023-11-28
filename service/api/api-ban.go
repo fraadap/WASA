@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -24,7 +25,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	var b ban
+	var b structs.Ban
 	err0 := json.Unmarshal(body, &b)
 	if b.TimeStamp == "" {
 		b.TimeStamp = time.Now().UTC().Format("2006-01-02T15:04:05Z")
@@ -34,12 +35,15 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	if err0 != nil || b.UserIDBanned == 0 || b.UserIDBanned == id {
+	if err0 != nil || b.Banned == 0 || b.Banned == id {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	b.UserID = id
+
 	var err1 error
-	b.BanID, err1 = rt.db.NewBan(id, b.UserIDBanned, b.TimeStamp)
+	b.BanID, err1 = rt.db.NewBan(id, b.Banned, b.TimeStamp)
 	if err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -73,11 +77,4 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
-}
-
-// struttura del ban
-type ban struct {
-	BanID        int    `json:"banID"`        // id del ban
-	UserIDBanned int    `json:"userIDBanned"` // id dello user bannato
-	TimeStamp    string `json:"timestamp"`    // timestamp di quando è avvenuto il follow
 }

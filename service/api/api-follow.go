@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -23,16 +24,18 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	var f follow
+	var f structs.Follow
 	err0 := json.Unmarshal(body, &f)
 
-	if err0 != nil || f.FollowedId == 0 || f.FollowedId == id {
+	if err0 != nil || f.Followed == 0 || f.Followed == id {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
+	f.UserID = id
+
 	// controllo se l'utente è bannato dalla persona che vuole seguire
-	if banned, er1 := rt.db.IsBanned(f.FollowedId, id); banned {
+	if banned, er1 := rt.db.IsBanned(f.Followed, id); banned {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	} else if er1 != nil {
@@ -49,7 +52,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	var err1 error
-	f.FollowId, err1 = rt.db.NewFollow(id, f.FollowedId, f.TimeStamp)
+	f.FollowId, err1 = rt.db.NewFollow(id, f.Followed, f.TimeStamp)
 	if err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -83,11 +86,4 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 	w.WriteHeader(http.StatusNoContent)
 
-}
-
-// struttura del follow
-type follow struct {
-	FollowId   int    `json:"followID"`   // id del follow
-	FollowedId int    `json:"followedID"` // id dello user seguito
-	TimeStamp  string `json:"timestamp"`  // timestamp di quando è avvenuto il follow
 }

@@ -36,12 +36,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/sirupsen/logrus"
 )
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	Login(username string) (int, error)
+	GetProfile(ID int) (structs.Profile, error)
 	SetUsername(id int, username string) error
 	NewFollow(id int, followedId int, timestamp string) (int, error)
 	DeleteFollow(id int, followId int) error

@@ -7,12 +7,16 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
-func (db *appdbimpl) NewFollow(id int, followedId int, timestamp string) (int, error) {
+func (db *appdbimpl) NewFollow(id int, followed int, timestamp string) (int, error) {
 
 	var followID = 0
-	er1 := db.c.QueryRow("SELECT id FROM follow WHERE userID=? AND followed=?", id, followedId).Scan(&followID)
+	er1 := db.c.QueryRow("SELECT id FROM follow WHERE userID=? AND followed=?", id, followed).Scan(&followID)
 	if errors.Is(er1, sql.ErrNoRows) {
-		res, err := db.c.Exec("INSERT INTO follow (userID,followed,timestamp) VALUES (?,?,?)", id, followedId, timestamp)
+		res, err := db.c.Exec("INSERT INTO follow (userID,followed,timestamp) VALUES (?,?,?)", id, followed, timestamp)
+
+		if err != nil {
+			return 0, err
+		}
 		t, _ := res.LastInsertId()
 		followID = int(t)
 
