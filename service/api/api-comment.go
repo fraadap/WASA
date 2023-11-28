@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -17,6 +18,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 
 	if err != nil || err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Print("1")
 		return
 	}
 
@@ -24,6 +26,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	body, er := io.ReadAll(r.Body)
 	if er != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Print("2")
 		return
 	}
 
@@ -50,7 +53,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	com.PhotoID = photoID
 
 	userIDPhoto, err := rt.db.UserIDByPhoto(photoID)
-	if err != nil {
+	if err != nil || userID != userIDPhoto {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -66,7 +69,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	var err2 error
 
 	// aggiunta del commento al db
-	com.CommentID, err2 = rt.db.NewComment(userID, photoID, com.Text, com.TimeStamp)
+	com.CommentID, err2 = rt.db.NewComment(com.UserID, com.PhotoID, com.Text, com.TimeStamp)
 	if err2 != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

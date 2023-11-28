@@ -25,7 +25,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	w.Header().Set("content-type", "text/plain")
+	w.Header().Set("content-type", "application/json")
 	_ = json.NewEncoder(w).Encode(pr)
 }
 
@@ -61,8 +61,4 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(u)
-}
-
-func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	//
 }

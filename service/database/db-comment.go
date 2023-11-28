@@ -1,6 +1,10 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+
+	"github.com/fraadap/WASA/service/structs"
+)
 
 func (db *appdbimpl) NewComment(userID int, photoID int, text string, TimeStamp string) (int, error) {
 	var commentID = 0
@@ -34,4 +38,23 @@ func (db *appdbimpl) DeleteComment(commentID int, photoID int, userID int) error
 
 	return nil
 
+}
+
+func (db *appdbimpl) GetComments(photoID int) ([]structs.Comment, error) {
+	var comments []structs.Comment
+
+	queryUser := "SELECT * FROM comment WHERE photoID = ?"
+	comms, err := db.c.Query(queryUser, photoID)
+	if err != nil {
+		return comments, err
+	}
+	for comms.Next() != false {
+		var c structs.Comment
+		err := comms.Scan(&c.CommentID, &c.UserID, &c.PhotoID, &c.Text, &c.TimeStamp)
+		if err != nil {
+			return comments, err
+		}
+		comments = append(comments, c)
+	}
+	return comments, nil
 }

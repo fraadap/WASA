@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/mattn/go-sqlite3"
 )
 
@@ -52,7 +53,48 @@ func (db *appdbimpl) DeletePhoto(id int, photoId int) error {
 }
 
 func (db *appdbimpl) UserIDByPhoto(photoID int) (int, error) {
-	var ban int
-	err := db.c.QueryRow("SELECT userID FROM photo WHERE userID=?", photoID).Scan(&ban)
-	return ban, err
+	var id int
+	err := db.c.QueryRow("SELECT userID FROM photo WHERE id=?", photoID).Scan(&id)
+	return id, err
+}
+
+func (db *appdbimpl) GetMyStream(id int) (structs.Stream, error) {
+	var st structs.Stream
+
+	// query per le info dell'utente
+	queryUser := "SELECT id, username FROM user WHERE id = ?"
+	err := db.c.QueryRow(queryUser, id).Scan(&st.User.Id, &st.User.Username)
+	if err != nil {
+		return st, err
+	}
+
+	// query per le foto dell'utente
+	queryPhotos := "SELECT photo.id, photo.userID, photo.path, photo.timestamp FROM photo, follow WHERE photo.userID=follow.followed AND follow.userID=? ORDER BY photo.timestamp DESC"
+	photos, err := db.c.Query(queryPhotos, id)
+	if err != nil {
+		return st, err
+	}
+
+	for photos.Next() != false {
+		var ph structs.PhotoInfo
+		err := photos.Scan(&ph.Photo.PhotoID, &ph.Photo.UserID, &ph.Photo.Path, &ph.Photo.TimeStamp)
+		if err != nil {
+			return st, err
+		}
+		ph.Comments, err = db.GetComments(ph.Photo.PhotoID)
+		if err != nil {
+			return st, err
+		}
+
+		ph.Likes, err = db.GetLikes(ph.Photo.PhotoID)
+		if err != nil {
+			return st, err
+		}
+
+		ph.NComments = len(ph.Comments)
+		ph.NLikes = len(ph.Likes)
+
+		st.Photos = append(st.Photos, ph)
+	}
+	return st, nil
 }

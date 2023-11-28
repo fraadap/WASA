@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/fraadap/WASA/service/structs"
 )
@@ -15,6 +14,8 @@ func (db *appdbimpl) Login(username string) (int, error) {
 		res, _ := db.c.Exec("INSERT INTO user (username) VALUES (?)", username)
 		t, _ := res.LastInsertId()
 		id = int(t)
+	} else if er1 != nil {
+		return 0, er1
 	}
 
 	return id, nil
@@ -98,6 +99,5 @@ func (db *appdbimpl) GetProfile(ID int) (structs.Profile, error) {
 
 	profile.NPhotos = len(profile.Photos)
 
-	fmt.Println(profile)
 	return profile, nil
 }

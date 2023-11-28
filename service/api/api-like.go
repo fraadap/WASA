@@ -50,7 +50,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 
 	// controllo se l'utente è bannato dalla persona proprietaria della photo
 	userIDPhoto, err := rt.db.UserIDByPhoto(photoID)
-	if err != nil {
+	if err != nil || userID != userIDPhoto {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -66,7 +66,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	var err2 error
 
 	// aggiunta del commento al db
-	li.LikeID, err2 = rt.db.NewLike(userID, photoID, li.TimeStamp)
+	li.LikeID, err2 = rt.db.NewLike(li.UserID, li.PhotoID, li.TimeStamp)
 	if err2 != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

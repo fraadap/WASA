@@ -4,14 +4,14 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/fraadap/WASA/service/structs"
 	"github.com/mattn/go-sqlite3"
 )
 
 func (db *appdbimpl) NewLike(userID int, photoID int, TimeStamp string) (int, error) {
 
 	var likeID = 0
-
-	er1 := db.c.QueryRow("SELECT id FROM like WHERE photoID=? AND userID=?", photoID, userID).Scan(&photoID)
+	er1 := db.c.QueryRow("SELECT id FROM like WHERE photoID=? AND userID=?", photoID, userID).Scan(&likeID)
 	if errors.Is(er1, sql.ErrNoRows) {
 
 		res, err := db.c.Exec("INSERT INTO like (photoID,userID,timestamp) VALUES (?,?,?)", photoID, userID, TimeStamp)
@@ -46,4 +46,23 @@ func (db *appdbimpl) DeleteLike(likeID int, photoID int, userID int) error {
 
 	return nil
 
+}
+
+func (db *appdbimpl) GetLikes(photoID int) ([]structs.Like, error) {
+	var likes []structs.Like
+
+	queryUser := "SELECT * FROM like WHERE photoID = ?"
+	ls, err := db.c.Query(queryUser, photoID)
+	if err != nil {
+		return likes, err
+	}
+	for ls.Next() != false {
+		var like structs.Like
+		err := ls.Scan(&like.LikeID, &like.UserID, &like.PhotoID, &like.TimeStamp)
+		if err != nil {
+			return likes, err
+		}
+		likes = append(likes, like)
+	}
+	return likes, nil
 }

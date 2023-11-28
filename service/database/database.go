@@ -50,13 +50,16 @@ type AppDatabase interface {
 	NewBan(id int, userIDBanned int, timeStamp string) (int, error)
 	DeleteBan(id int, banId int) error
 	IsBanned(userID int, bannedID int) (bool, error)
+	GetMyStream(id int) (structs.Stream, error)
 	NewPhoto(id int, path string, timestamp string) (int, error)
 	DeletePhoto(id int, photoId int) error
 	UserIDByPhoto(photoID int) (int, error)
 	NewComment(userID int, photoID int, text string, TimeStamp string) (int, error)
 	DeleteComment(commentID int, photoID int, userID int) error
+	GetComments(photoID int) ([]structs.Comment, error)
 	NewLike(userID int, photoID int, TimeStamp string) (int, error)
 	DeleteLike(likeID int, photoID int, userID int) error
+	GetLikes(photoID int) ([]structs.Like, error)
 
 	Ping() error
 }
