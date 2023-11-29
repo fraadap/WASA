@@ -45,6 +45,7 @@ type AppDatabase interface {
 	Login(username string) (int, error)
 	GetProfile(ID int) (structs.Profile, error)
 	SetUsername(id int, username string) error
+	ExistsUser(userID int) (bool, error)
 	NewFollow(id int, followedId int, timestamp string) (int, error)
 	DeleteFollow(id int, followId int) error
 	NewBan(id int, userIDBanned int, timeStamp string) (int, error)
@@ -57,9 +58,11 @@ type AppDatabase interface {
 	NewComment(userID int, photoID int, text string, TimeStamp string) (int, error)
 	DeleteComment(commentID int, photoID int, userID int) error
 	GetComments(photoID int) ([]structs.Comment, error)
+	GetOwnerFromCommentID(commentID int) (int, error)
 	NewLike(userID int, photoID int, TimeStamp string) (int, error)
 	DeleteLike(likeID int, photoID int, userID int) error
 	GetLikes(photoID int) ([]structs.Like, error)
+	GetOwnerFromLikeID(commentID int) (int, error)
 
 	Ping() error
 }

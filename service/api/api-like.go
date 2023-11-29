@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fraadap/WASA/service/api/reqcontext"
 	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	userID, err := strconv.Atoi(ps.ByName("userID"))
 	photoID, err1 := strconv.Atoi(ps.ByName("photoID"))
@@ -38,6 +39,12 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	li.PhotoID = photoID
+
+	token := getToken(r.Header.Get("Authorization"))
+	if li.UserID != token {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 
 	// generazione timestamp se assente altimenti controllo del formato
 	if li.TimeStamp == "" {
@@ -78,7 +85,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	json.NewEncoder(w).Encode(li) // return: struttura like
 }
 
-func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	//ricezione dei params userID, photoID e likeID con relativa gestione degli errori di conversione
 
@@ -97,6 +104,14 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	likeId, err1 := strconv.Atoi(ps.ByName("likeID"))
 	if err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	token := getToken(r.Header.Get("Authorization"))
+
+	owner, err := rt.db.GetOwnerFromLikeID(likeId)
+	if err != nil || owner != token {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 

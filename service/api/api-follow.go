@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fraadap/WASA/service/api/reqcontext"
 	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	id, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -63,7 +64,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	json.NewEncoder(w).Encode(f)
 }
 
-func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	id, err := strconv.Atoi(ps.ByName("userID"))
 
@@ -72,9 +73,16 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	followId, err0 := strconv.Atoi(ps.ByName("followID"))
+	token := getToken(r.Header.Get("Authorization"))
 
-	if err0 != nil {
+	if id != token {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	followId, err := strconv.Atoi(ps.ByName("followID"))
+
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

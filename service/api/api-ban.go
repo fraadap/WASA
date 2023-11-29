@@ -7,12 +7,13 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fraadap/WASA/service/api/reqcontext"
 	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
 // Posts a new ban
-func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	id, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -42,6 +43,12 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	b.UserID = id
 
+	token := getToken(r.Header.Get("Authorization"))
+	if b.UserID != token {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	var err1 error
 	b.BanID, err1 = rt.db.NewBan(id, b.Banned, b.TimeStamp)
 	if err1 != nil {
@@ -55,7 +62,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 // Removes a ban
-func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var err error
 	id, err := strconv.Atoi(ps.ByName("userID"))
 
@@ -64,6 +71,14 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
+	token := getToken(r.Header.Get("Authorization"))
+
+	if id != token {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	// ban id in input da cambiare
 	banID, err := strconv.Atoi(ps.ByName("banID"))
 
 	if err != nil {

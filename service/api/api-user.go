@@ -6,18 +6,18 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/fraadap/WASA/service/api/reqcontext"
 	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
 // getUserProfile restituisce le foto dell'utente in ordine cronologico, quante foto ha, followers e following
-func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	id, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
 	pr, err := rt.db.GetProfile(id)
 
 	if err != nil {
@@ -29,10 +29,17 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	_ = json.NewEncoder(w).Encode(pr)
 }
 
-func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	id, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	token := getToken(r.Header.Get("Authorization"))
+
+	if id != token {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 

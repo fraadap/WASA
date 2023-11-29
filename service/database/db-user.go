@@ -101,3 +101,13 @@ func (db *appdbimpl) GetProfile(ID int) (structs.Profile, error) {
 
 	return profile, nil
 }
+
+func (db *appdbimpl) ExistsUser(userID int) (bool, error) {
+	yes := false
+	queryUser := "SELECT EXISTS(*) FROM user WHERE id = ?"
+	err := db.c.QueryRow(queryUser, userID).Scan(&yes)
+	if err != nil {
+		return yes, err
+	}
+	return yes, err
+}

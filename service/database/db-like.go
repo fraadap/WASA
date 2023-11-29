@@ -66,3 +66,10 @@ func (db *appdbimpl) GetLikes(photoID int) ([]structs.Like, error) {
 	}
 	return likes, nil
 }
+
+func (db *appdbimpl) GetOwnerFromLikeID(likeID int) (int, error) {
+	var owner int
+	queryUser := "SELECT userID FROM like WHERE id = ?"
+	err := db.c.QueryRow(queryUser, likeID).Scan(&owner)
+	return owner, err
+}

@@ -2,23 +2,22 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/fraadap/WASA/service/api/reqcontext"
 	"github.com/fraadap/WASA/service/structs"
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	userID, err := strconv.Atoi(ps.ByName("userID"))
 	photoID, err1 := strconv.Atoi(ps.ByName("photoID"))
 
 	if err != nil || err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Print("1")
 		return
 	}
 
@@ -26,7 +25,6 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	body, er := io.ReadAll(r.Body)
 	if er != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Print("2")
 		return
 	}
 
@@ -38,6 +36,11 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	// controllo se l'utente è bannato dalla persona proprietaria della photo
 	if err0 != nil || com.Text == "" || com.UserID == 0 {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	token := getToken(r.Header.Get("Authorization"))
+	if com.UserID != token {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
@@ -81,7 +84,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	json.NewEncoder(w).Encode(com) // return: struttura comment
 }
 
-func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	//ricezione dei params userID, photoID e commentID con relativa gestione degli errori di conversione
 
@@ -103,6 +106,13 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
+	token := getToken(r.Header.Get("Authorization"))
+
+	owner, err := rt.db.GetOwnerFromCommentID(commentId)
+	if err != nil || owner != token {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 	// eliminazione del commento
 	err2 := rt.db.DeleteComment(commentId, photoId, id)
 	if err2 != nil {
