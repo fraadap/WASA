@@ -73,6 +73,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	//controllo se l'utente è lo userID
 	token := getToken(r.Header.Get("Authorization"))
 
 	if id != token {
