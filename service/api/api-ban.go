@@ -43,7 +43,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	b.UserID = id
 
-	token := getToken(r.Header.Get("Authenticate"))
+	token := getToken(r.Header.Get("Authorization"))
 	if b.UserID != token {
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -58,7 +58,11 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(b)
+	e := json.NewEncoder(w).Encode(b)
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 // Removes a ban
@@ -71,7 +75,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	token := getToken(r.Header.Get("Authenticate"))
+	token := getToken(r.Header.Get("Authorization"))
 
 	if id != token {
 		w.WriteHeader(http.StatusForbidden)

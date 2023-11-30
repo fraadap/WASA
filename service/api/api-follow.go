@@ -19,7 +19,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	token := getToken(r.Header.Get("Authenticate"))
+	token := getToken(r.Header.Get("Authorization"))
 
 	if id != token {
 		w.WriteHeader(http.StatusForbidden)
@@ -68,7 +68,11 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(f)
+	e := json.NewEncoder(w).Encode(f)
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -80,8 +84,8 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	//controllo se l'utente è lo userID
-	token := getToken(r.Header.Get("Authenticate"))
+	// controllo se l'utente è lo userID
+	token := getToken(r.Header.Get("Authorization"))
 
 	if id != token {
 		w.WriteHeader(http.StatusForbidden)

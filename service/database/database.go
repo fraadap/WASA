@@ -33,7 +33,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/fraadap/WASA/service/structs"
@@ -84,17 +83,20 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
-	//db.Exec("DROP TABLE example_table")
+	// db.Exec("DROP TABLE example_table")
 	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table'; `).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		err = createTables(db)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, errors.New("error creating database structure")
 		}
 		logger.Println("Database's tables created")
 	}
 
-	db.Exec("PRAGMA foreign_keys = ON;") // abilitare le foreign keys
+	_, err2 := db.Exec("PRAGMA foreign_keys = ON;") // abilitare le foreign keys
+	if err2 != nil {
+		return nil, errors.New("error changing pragmas foreign key")
+	}
 
 	return &appdbimpl{
 		c: db,

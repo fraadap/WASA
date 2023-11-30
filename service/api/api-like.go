@@ -40,7 +40,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 
 	li.PhotoID = photoID
 
-	token := getToken(r.Header.Get("Authenticate"))
+	token := getToken(r.Header.Get("Authorization"))
 	if li.UserID != token {
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -82,12 +82,16 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	// risposta
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(li) // return: struttura like
+	e := json.NewEncoder(w).Encode(li) // return: struttura like
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	//ricezione dei params userID, photoID e likeID con relativa gestione degli errori di conversione
+	// ricezione dei params userID, photoID e likeID con relativa gestione degli errori di conversione
 
 	id, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
@@ -107,7 +111,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	token := getToken(r.Header.Get("Authenticate"))
+	token := getToken(r.Header.Get("Authorization"))
 
 	owner, err := rt.db.GetOwnerFromLikeID(likeId)
 	if err != nil || owner != token {
@@ -122,6 +126,6 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	//risposta 204
+	// risposta 204
 	w.WriteHeader(http.StatusNoContent)
 }

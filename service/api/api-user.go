@@ -26,7 +26,11 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	w.Header().Set("content-type", "application/json")
-	_ = json.NewEncoder(w).Encode(pr)
+	e := json.NewEncoder(w).Encode(pr)
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -36,7 +40,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	token := getToken(r.Header.Get("Authenticate"))
+	token := getToken(r.Header.Get("Authorization"))
 
 	if id != token {
 		w.WriteHeader(http.StatusForbidden)

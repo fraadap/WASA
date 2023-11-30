@@ -38,7 +38,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	token := getToken(r.Header.Get("Authenticate"))
+	token := getToken(r.Header.Get("Authorization"))
 	if com.UserID != token {
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -81,12 +81,16 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	// risposta
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(com) // return: struttura comment
+	e := json.NewEncoder(w).Encode(com) // return: struttura comment
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	//ricezione dei params userID, photoID e commentID con relativa gestione degli errori di conversione
+	// ricezione dei params userID, photoID e commentID con relativa gestione degli errori di conversione
 
 	id, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
@@ -106,7 +110,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	token := getToken(r.Header.Get("Authenticate"))
+	token := getToken(r.Header.Get("Authorization"))
 
 	owner, err := rt.db.GetOwnerFromCommentID(commentId)
 	if err != nil || owner != token {
@@ -120,6 +124,6 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	//risposta 204
+	// risposta 204
 	w.WriteHeader(http.StatusNoContent)
 }

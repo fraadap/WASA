@@ -479,7 +479,7 @@ components:
       type: object
       description: 'Follow structure'
       required:
-        - followedID
+        - followed
       properties:
         followID:
           type: integer
@@ -582,7 +582,7 @@ components:
       type: object
       description: 'Banned user by a specific user'
       required:
-        - userIDBanned
+        - banned
       properties:
         banID:
           type: integer
@@ -635,6 +635,8 @@ components:
           minimum: 0
           
     Stream:
+      type: object
+      description: 'Stream of photos of a specific user'
       properties:
         user:
           $ref: '#/components/schemas/User'
@@ -647,6 +649,8 @@ components:
             $ref: '#/components/schemas/PhotoInfo'
     
     PhotoInfo:
+      type: object
+      description: 'Photo's complete infos'
       properties:
         photo:
           $ref: '#/components/schemas/Photo'

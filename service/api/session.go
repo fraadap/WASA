@@ -34,8 +34,11 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(id)
-
+	e := json.NewEncoder(w).Encode(id)
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func getToken(message string) int {

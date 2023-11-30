@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 func createTables(db *sql.DB) error {
@@ -20,7 +19,7 @@ func createTables(db *sql.DB) error {
 	_, err = db.Exec(sqlStmt)
 
 	if err != nil {
-		return fmt.Errorf("%w", err)
+		return err
 	}
 
 	// follow table
@@ -28,7 +27,7 @@ func createTables(db *sql.DB) error {
 	_, err = db.Exec(sqlStmt)
 
 	if err != nil {
-		return fmt.Errorf("%w", err)
+		return err
 	}
 
 	// ban table
@@ -36,7 +35,7 @@ func createTables(db *sql.DB) error {
 	_, err = db.Exec(sqlStmt)
 
 	if err != nil {
-		return fmt.Errorf("%w", err)
+		return err
 	}
 
 	// photo table
@@ -44,7 +43,7 @@ func createTables(db *sql.DB) error {
 	_, err = db.Exec(sqlStmt)
 
 	if err != nil {
-		return fmt.Errorf("%w", err)
+		return err
 	}
 
 	// comment table
@@ -52,7 +51,7 @@ func createTables(db *sql.DB) error {
 	_, err = db.Exec(sqlStmt)
 
 	if err != nil {
-		return fmt.Errorf("%w", err)
+		return err
 	}
 
 	// like table
@@ -60,7 +59,7 @@ func createTables(db *sql.DB) error {
 	_, err = db.Exec(sqlStmt)
 
 	if err != nil {
-		return fmt.Errorf("%w", err)
+		return err
 	}
 
 	return nil

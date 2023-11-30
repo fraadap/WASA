@@ -11,7 +11,10 @@ func (db *appdbimpl) Login(username string) (int, error) {
 	var id int
 	er1 := db.c.QueryRow("SELECT id FROM user WHERE username=?", username).Scan(&id)
 	if errors.Is(er1, sql.ErrNoRows) {
-		res, _ := db.c.Exec("INSERT INTO user (username) VALUES (?)", username)
+		res, err := db.c.Exec("INSERT INTO user (username) VALUES (?)", username)
+		if err != nil {
+			return 0, err
+		}
 		t, _ := res.LastInsertId()
 		id = int(t)
 	} else if er1 != nil {

@@ -43,8 +43,14 @@ func (db *appdbimpl) DeletePhoto(id int, photoId int) error {
 			err1 := sql.ErrNoRows
 			return err1
 		} else {
-			db.c.Exec("DELETE FROM like WHERE photoID=", photoId)
-			db.c.Exec("DELETE FROM comment WHERE photoID=", photoId)
+			_, err = db.c.Exec("DELETE FROM like WHERE photoID=", photoId)
+			if err != nil {
+				return err
+			}
+			_, err = db.c.Exec("DELETE FROM comment WHERE photoID=", photoId)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
