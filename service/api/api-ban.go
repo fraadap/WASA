@@ -43,7 +43,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	b.UserID = id
 
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 	if b.UserID != token {
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -71,7 +71,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 
 	if id != token {
 		w.WriteHeader(http.StatusForbidden)

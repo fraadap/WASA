@@ -36,7 +36,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 
 	if id != token {
 		w.WriteHeader(http.StatusForbidden)

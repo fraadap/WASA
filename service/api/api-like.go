@@ -40,7 +40,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 
 	li.PhotoID = photoID
 
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 	if li.UserID != token {
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -107,7 +107,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 
 	owner, err := rt.db.GetOwnerFromLikeID(likeId)
 	if err != nil || owner != token {

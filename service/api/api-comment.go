@@ -38,7 +38,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 	if com.UserID != token {
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -106,7 +106,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 
 	owner, err := rt.db.GetOwnerFromCommentID(commentId)
 	if err != nil || owner != token {

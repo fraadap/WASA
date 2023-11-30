@@ -22,7 +22,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 
 	if id != token {
 		w.WriteHeader(http.StatusForbidden)
@@ -72,7 +72,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 
 	if id != token {
 		w.WriteHeader(http.StatusForbidden)
@@ -101,7 +101,7 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	token := getToken(r.Header.Get("Authorization"))
+	token := getToken(r.Header.Get("Authenticate"))
 
 	if id != token {
 		w.WriteHeader(http.StatusForbidden)
