@@ -650,7 +650,7 @@ components:
     
     PhotoInfo:
       type: object
-      description: 'Photo's complete infos'
+      description: "Photo's complete infos"
       properties:
         photo:
           $ref: '#/components/schemas/Photo'
