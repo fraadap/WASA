@@ -53,10 +53,10 @@ func (db *appdbimpl) GetLikes(photoID int) ([]structs.Like, error) {
 
 	queryUser := "SELECT * FROM like WHERE photoID = ?"
 	ls, err := db.c.Query(queryUser, photoID)
-	if err != nil {
+	if err != nil || ls.Err() != nil {
 		return likes, err
 	}
-	for ls.Next() != false {
+	for ls.Next() {
 		var like structs.Like
 		err := ls.Scan(&like.LikeID, &like.UserID, &like.PhotoID, &like.TimeStamp)
 		if err != nil {

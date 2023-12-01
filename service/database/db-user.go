@@ -50,26 +50,26 @@ func (db *appdbimpl) GetProfile(ID int) (structs.Profile, error) {
 	// query per le foto dell'utente
 	queryPhotos := "SELECT * FROM photo WHERE photo.userID=?"
 	photos, err := db.c.Query(queryPhotos, ID)
-	if err != nil {
+	if err != nil || photos.Err() != nil {
 		return profile, err
 	}
 
 	// query per i followings dell'utente
 	queryFollowings := "SELECT user.id, user.username FROM user, follow WHERE user.id = follow.followed AND follow.userID=?"
 	followings, err := db.c.Query(queryFollowings, ID)
-	if err != nil {
+	if err != nil || followings.Err() != nil {
 		return profile, err
 	}
 
 	// query per i followers dell'utente
 	queryFollowers := "SELECT user.id, user.username FROM user, follow WHERE user.id=follow.userID AND follow.followed=?"
 	followers, err := db.c.Query(queryFollowers, ID)
-	if err != nil {
+	if err != nil || followers.Err() != nil {
 		return profile, err
 	}
 
 	// per ogni foto creo un tipo foto, per ogni foto prendo i commenti e i like
-	for photos.Next() != false {
+	for photos.Next() {
 		var ph structs.Photo
 		err1 := photos.Scan(&ph.PhotoID, &ph.UserID, &ph.Path, &ph.TimeStamp)
 		if err1 != nil {
@@ -80,7 +80,7 @@ func (db *appdbimpl) GetProfile(ID int) (structs.Profile, error) {
 	}
 
 	// per ogni foto creo un tipo foto, per ogni foto prendo i commenti e i like
-	for followings.Next() != false {
+	for followings.Next() {
 		var u structs.User
 		err1 := followings.Scan(&u.Id, &u.Username)
 		if err1 != nil {
@@ -90,7 +90,7 @@ func (db *appdbimpl) GetProfile(ID int) (structs.Profile, error) {
 		}
 	}
 
-	for followers.Next() != false {
+	for followers.Next() {
 		var u structs.User
 		err1 := followers.Scan(&u.Id, &u.Username)
 		if err1 != nil {

@@ -147,7 +147,7 @@ paths:
         '403':
           description: 'Forbidden - user banned'
 
-  /users/{userID}/followers/{followID}:  
+  /users/{userID}/follow/{followID}:  
     delete:
       tags: 
         - follow

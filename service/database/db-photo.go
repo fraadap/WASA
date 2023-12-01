@@ -77,11 +77,11 @@ func (db *appdbimpl) GetMyStream(id int) (structs.Stream, error) {
 	// query per le foto dell'utente
 	queryPhotos := "SELECT photo.id, photo.userID, photo.path, photo.timestamp FROM photo, follow WHERE photo.userID=follow.followed AND follow.userID=? ORDER BY photo.timestamp DESC"
 	photos, err := db.c.Query(queryPhotos, id)
-	if err != nil {
+	if err != nil || photos.Err() != nil {
 		return st, err
 	}
 
-	for photos.Next() != false {
+	for photos.Next() {
 		var ph structs.PhotoInfo
 		err := photos.Scan(&ph.Photo.PhotoID, &ph.Photo.UserID, &ph.Photo.Path, &ph.Photo.TimeStamp)
 		if err != nil {

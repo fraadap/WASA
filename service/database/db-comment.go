@@ -45,10 +45,10 @@ func (db *appdbimpl) GetComments(photoID int) ([]structs.Comment, error) {
 
 	queryUser := "SELECT * FROM comment WHERE photoID = ?"
 	comms, err := db.c.Query(queryUser, photoID)
-	if err != nil {
+	if err != nil || comms.Err() != nil {
 		return comments, err
 	}
-	for comms.Next() != false {
+	for comms.Next() {
 		var c structs.Comment
 		err := comms.Scan(&c.CommentID, &c.UserID, &c.PhotoID, &c.Text, &c.TimeStamp)
 		if err != nil {

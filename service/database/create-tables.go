@@ -14,6 +14,10 @@ func createTables(db *sql.DB) error {
 	sqlStmt = `CREATE TABLE IF NOT EXISTS example_table (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name VARCHAR(16));`
 	_, err = db.Exec(sqlStmt)
 
+	if err != nil {
+		return err
+	}
+
 	// user table
 	sqlStmt = `CREATE TABLE IF NOT EXISTS user (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, username VARCHAR(16) UNIQUE NOT NULL);`
 	_, err = db.Exec(sqlStmt)
