@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -54,7 +53,6 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	b.BanID, err1 = rt.db.NewBan(id, b.Banned, b.TimeStamp)
 	if err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Println(err1)
 		return
 	}
 

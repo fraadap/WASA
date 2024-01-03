@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -23,7 +22,6 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Print(err.Error(), " Errore al profile")
 		return
 	}
 	token := getToken(r.Header.Get("Authorization"))

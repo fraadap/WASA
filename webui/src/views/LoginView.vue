@@ -2,36 +2,33 @@
 import { RouterLink } from 'vue-router';
 
 export default {
-    data: function () {
-        return {
-            errormsg: null,
-            loading: false,
-            some_data: null,
-            username: '',
-        };
+  data: function () {
+    return {
+      errormsg: null,
+      loading: false,
+      some_data: null,
+      username: '',
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        let response = await this.$axios.post('/session', {
+          username: this.username
+        });
+        localStorage.setItem("token", response.data)
+        console.log("ID logged: " + response.data)
+      }
+      catch (e) {
+        alert("Error: " + e);
+      }
     },
-    methods: {
-        async login() {
-            try {
-                let response = await this.$axios.post('/session', {
-                    username: this.username
-                });
-                localStorage.setItem("token", response.data ) 
-                console.log("ID logged: "+ response.data)
-            }
-            catch (e) {
-                alert("Error: " + e);
-            }
-        },
-    },
-    components: { RouterLink }
+  },
+  components: { RouterLink }
 }
 </script>
 
 <template>
-
-
-
   <div class="container d-flex justify-content-between mt-5">
     <!-- Left Box -->
     <div class="card p-4" style="width: 45%;">
@@ -51,5 +48,4 @@ export default {
       </RouterLink>
     </div>
   </div>
-
 </template>
