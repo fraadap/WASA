@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -34,12 +35,14 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	err0 := json.Unmarshal(body, &com)
 
 	// controllo se l'utente è bannato dalla persona proprietaria della photo
-	if err0 != nil || com.Text == "" || com.UserID == 0 {
+	if err0 != nil || com.Text == "" || com.User.Id == 0 {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Print(err0.Error())
+		fmt.Println("ciao")
 		return
 	}
 	token := getToken(r.Header.Get("Authorization"))
-	if com.UserID != token {
+	if com.User.Id != token {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
@@ -61,7 +64,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	if banned, er1 := rt.db.IsBanned(userIDPhoto, com.UserID); banned {
+	if banned, er1 := rt.db.IsBanned(userIDPhoto, com.User.Id); banned {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	} else if er1 != nil {
@@ -72,8 +75,14 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	var err2 error
 
 	// aggiunta del commento al db
-	com.CommentID, err2 = rt.db.NewComment(com.UserID, com.PhotoID, com.Text, com.TimeStamp)
+	com.CommentID, err2 = rt.db.NewComment(com.User.Id, com.PhotoID, com.Text, com.TimeStamp)
 	if err2 != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	com.User.Username, err = rt.db.GetUsername(com.User.Id)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -94,18 +103,21 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 
 	id, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
+		fmt.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	photoId, err0 := strconv.Atoi(ps.ByName("photoID"))
 	if err0 != nil {
+		fmt.Println(err0.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	commentId, err1 := strconv.Atoi(ps.ByName("commentID"))
 	if err1 != nil {
+		fmt.Println(err1.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -114,12 +126,14 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 
 	owner, err := rt.db.GetOwnerFromCommentID(commentId)
 	if err != nil || owner != token {
+		fmt.Println(err.Error())
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 	// eliminazione del commento
 	err2 := rt.db.DeleteComment(commentId, photoId, id)
 	if err2 != nil {
+		fmt.Println(err2.Error())
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

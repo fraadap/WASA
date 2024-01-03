@@ -45,13 +45,16 @@ type AppDatabase interface {
 	GetProfile(ID int) (structs.Profile, error)
 	SetUsername(id int, username string) error
 	ExistsUser(userID int) (bool, error)
+	GetUsername(id int) (string, error)
 	NewFollow(id int, followedId int, timestamp string) (int, error)
 	DeleteFollow(id int, followId int) error
+	GetFollowID(id int, followed int) (int, error)
 	NewBan(id int, userIDBanned int, timeStamp string) (int, error)
 	DeleteBan(id int, banId int) error
 	IsBanned(userID int, bannedID int) (bool, error)
+	GetBanID(id int, banned int) (int, error)
 	GetMyStream(id int) (structs.Stream, error)
-	NewPhoto(id int, path string, timestamp string) (int, error)
+	NewPhoto(id int, binary []byte, timestamp string) (int, error)
 	DeletePhoto(id int, photoId int) error
 	UserIDByPhoto(photoID int) (int, error)
 	NewComment(userID int, photoID int, text string, TimeStamp string) (int, error)

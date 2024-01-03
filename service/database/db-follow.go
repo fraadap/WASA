@@ -45,3 +45,14 @@ func (db *appdbimpl) DeleteFollow(id int, followId int) error {
 	return nil
 
 }
+
+func (db *appdbimpl) GetFollowID(id int, followed int) (int, error) {
+
+	var followID = 0
+	er1 := db.c.QueryRow("SELECT id FROM follow WHERE userID=? AND followed=?", id, followed).Scan(&followID)
+	if er1 != nil {
+		return 0, er1
+	} else {
+		return followID, nil
+	}
+}

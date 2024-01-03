@@ -107,3 +107,58 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	w.WriteHeader(http.StatusNoContent)
 
 }
+
+func (rt *_router) getFollowID(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	var f structs.Follow
+	id, err := strconv.Atoi(ps.ByName("userID"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	followed, err := strconv.Atoi(ps.ByName("followed"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	f.Followed = followed
+
+	if f.Followed == 0 || f.Followed == id {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	f.UserID = id
+
+	token := getToken(r.Header.Get("Authorization"))
+
+	if f.UserID != token && f.Followed != token {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	// controllo se l'utente è bannato dalla persona che vuole seguire
+	if banned, er1 := rt.db.IsBanned(f.Followed, id); banned {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	} else if er1 != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var err1 error
+	f.FollowId, err1 = rt.db.GetFollowID(f.UserID, f.Followed)
+	if err1 != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	e := json.NewEncoder(w).Encode(f)
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+}

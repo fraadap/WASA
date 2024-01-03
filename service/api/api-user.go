@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -22,9 +23,13 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
+		fmt.Print(err.Error(), " Errore al profile")
 		return
 	}
-
+	token := getToken(r.Header.Get("Authorization"))
+	if token != id {
+		pr.Bans = nil
+	}
 	w.Header().Set("content-type", "application/json")
 	e := json.NewEncoder(w).Encode(pr)
 	if e != nil {
@@ -76,4 +81,27 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+}
+
+func (rt *_router) getUsernameByID(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	id, err := strconv.Atoi(ps.ByName("userID"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	username, err1 := rt.db.GetUsername(id)
+	if err1 != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	er1 := json.NewEncoder(w).Encode(username)
+	if er1 != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 }

@@ -13,10 +13,12 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/session", rt.wrap(rt.doLogin))             // 1)fatto, manca la parte di sicurezza con variabile di sessione
 	rt.router.GET("/users/:userID", rt.wrap(rt.getUserProfile)) // 13)fatto
 	rt.router.PUT("/users/:userID", rt.wrap(rt.setMyUsername))  // 2)fatto
+	rt.router.GET("/users/:userID/username", rt.wrap(rt.getUsernameByID))
 
 	// followers section
 	rt.router.POST("/users/:userID/follow", rt.wrap(rt.followUser))               // 3)fatto
 	rt.router.DELETE("/users/:userID/follow/:followID", rt.wrap(rt.unfollowUser)) // 4)fatto
+	rt.router.GET("/users/:userID/followID/:followed", rt.wrap(rt.getFollowID))
 
 	// photos section
 	rt.router.GET("/users/:userID/photos", rt.wrap(rt.getMyStream))             // 14)
@@ -34,6 +36,7 @@ func (rt *_router) Handler() http.Handler {
 	// bans section
 	rt.router.POST("/users/:userID/bans", rt.wrap(rt.banUser))            // 5) fatto
 	rt.router.DELETE("/users/:userID/bans/:banID", rt.wrap(rt.unbanUser)) // 6) fatto
+	rt.router.GET("/users/:userID/banID/:banned", rt.wrap(rt.getBanID))
 
 	rt.router.GET("/context", rt.wrap(rt.getContextReply))
 

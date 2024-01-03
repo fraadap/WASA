@@ -48,7 +48,7 @@ func (db *appdbimpl) GetProfile(ID int) (structs.Profile, error) {
 	}
 
 	// query per le foto dell'utente
-	queryPhotos := "SELECT * FROM photo WHERE photo.userID=?"
+	queryPhotos := "SELECT photo.id, photo.userID, photo.binary, photo.timestamp FROM photo WHERE photo.userID=? ORDER BY photo.timestamp DESC"
 	photos, err := db.c.Query(queryPhotos, ID)
 	if err != nil || photos.Err() != nil {
 		return profile, err
@@ -68,15 +68,34 @@ func (db *appdbimpl) GetProfile(ID int) (structs.Profile, error) {
 		return profile, err
 	}
 
+	// query per i ban dell'utente
+	queryBans := "SELECT user.id, user.username FROM user, ban WHERE user.id=ban.banned AND ban.userID=?"
+	bans, err := db.c.Query(queryBans, ID)
+	if err != nil || bans.Err() != nil {
+		return profile, err
+	}
+
 	// per ogni foto creo un tipo foto, per ogni foto prendo i commenti e i like
 	for photos.Next() {
-		var ph structs.Photo
-		err1 := photos.Scan(&ph.PhotoID, &ph.UserID, &ph.Path, &ph.TimeStamp)
-		if err1 != nil {
-			return profile, err1
-		} else {
-			profile.Photos = append(profile.Photos, ph)
+		var ph structs.PhotoInfo
+		err := photos.Scan(&ph.Photo.PhotoID, &ph.Photo.UserID, &ph.Photo.Binary, &ph.Photo.TimeStamp)
+		if err != nil {
+			return profile, err
 		}
+		ph.Comments, err = db.GetComments(ph.Photo.PhotoID)
+		if err != nil {
+			return profile, err
+		}
+
+		ph.Likes, err = db.GetLikes(ph.Photo.PhotoID)
+		if err != nil {
+			return profile, err
+		}
+
+		ph.NComments = len(ph.Comments)
+		ph.NLikes = len(ph.Likes)
+
+		profile.Photos = append(profile.Photos, ph)
 	}
 
 	// per ogni foto creo un tipo foto, per ogni foto prendo i commenti e i like
@@ -100,6 +119,16 @@ func (db *appdbimpl) GetProfile(ID int) (structs.Profile, error) {
 		}
 	}
 
+	for bans.Next() {
+		var u structs.User
+		err1 := bans.Scan(&u.Id, &u.Username)
+		if err1 != nil {
+			return profile, err1
+		} else {
+			profile.Bans = append(profile.Bans, u)
+		}
+	}
+
 	profile.NPhotos = len(profile.Photos)
 
 	return profile, nil
@@ -113,4 +142,16 @@ func (db *appdbimpl) ExistsUser(userID int) (bool, error) {
 		return yes, err
 	}
 	return yes, err
+}
+
+func (db *appdbimpl) GetUsername(id int) (string, error) {
+	var username string
+
+	// query per le info dell'utente
+	queryUser := "SELECT username FROM user WHERE id = ?"
+	err := db.c.QueryRow(queryUser, id).Scan(&username)
+	if err != nil {
+		return username, err
+	}
+	return username, err
 }

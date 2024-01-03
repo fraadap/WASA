@@ -16,7 +16,6 @@ import (
 func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	id, err := strconv.Atoi(ps.ByName("userID"))
-
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -36,23 +35,16 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	var ph structs.Photo
-	err0 := json.Unmarshal(body, &ph)
+	ph.Binary = body
 
-	if ph.TimeStamp == "" {
-		ph.TimeStamp = time.Now().UTC().Format("2006-01-02T15:04:05Z")
-
-	} else if len(ph.TimeStamp) != 20 {
+	if ph.Binary == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if err0 != nil || ph.Path == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
+	ph.TimeStamp = time.Now().UTC().Format("2006-01-02T15:04:05Z")
 	var err1 error
-	ph.PhotoID, err1 = rt.db.NewPhoto(id, ph.Path, ph.TimeStamp)
+	ph.PhotoID, err1 = rt.db.NewPhoto(id, ph.Binary, ph.TimeStamp)
 	ph.UserID = id
 	if err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)

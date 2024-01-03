@@ -47,3 +47,14 @@ func (db *appdbimpl) IsBanned(userID int, bannedID int) (bool, error) {
 	err := db.c.QueryRow("SELECT COUNT(*)=1 FROM ban WHERE userID=? AND banned=?", userID, bannedID).Scan(&ban)
 	return ban, err
 }
+
+func (db *appdbimpl) GetBanID(id int, banned int) (int, error) {
+
+	var banID = 0
+	er1 := db.c.QueryRow("SELECT id FROM ban WHERE userID=? AND banned=?", id, banned).Scan(&banID)
+	if er1 != nil {
+		return 0, er1
+	} else {
+		return banID, nil
+	}
+}

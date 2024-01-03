@@ -32,7 +32,7 @@ func (db *appdbimpl) NewLike(userID int, photoID int, TimeStamp string) (int, er
 
 func (db *appdbimpl) DeleteLike(likeID int, photoID int, userID int) error {
 
-	ris, err := db.c.Exec("DELETE FROM like WHERE userID=? AND photoid=? AND id=?", userID, photoID, likeID)
+	ris, err := db.c.Exec("DELETE FROM like WHERE id=?", likeID)
 
 	if err != nil {
 		return err

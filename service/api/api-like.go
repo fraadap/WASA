@@ -118,7 +118,6 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-
 	// eliminazione del like
 	err2 := rt.db.DeleteLike(likeId, photoId, id)
 	if err2 != nil {

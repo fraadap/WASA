@@ -504,7 +504,7 @@ components:
       type: object
       description: "Photo's structure"
       required:
-        - path
+        - binary
       properties:
         photoID:
           type: integer
@@ -513,11 +513,11 @@ components:
           minimum: 1  
         userID:
           $ref: '#/components/schemas/User/properties/userID' 
-        path:
-          type: string
-          description: 'Local or remote url image file'
+        binary:
+          type: binary
+          description: 'binary codification of the photo'
           minLength: 13
-          maxLength: 100
+          maxLength: 1000000
           pattern: '^.*\.(png|jpg|jpeg)$'
         timestamp:
           type: string

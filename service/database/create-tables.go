@@ -43,7 +43,7 @@ func createTables(db *sql.DB) error {
 	}
 
 	// photo table
-	sqlStmt = `CREATE TABLE IF NOT EXISTS photo (id INTEGER NOT NULL PRIMARY KEY, userID INTEGER NOT NULL, path VARCHAR(40) UNIQUE NOT NULL, timestamp DATETIME, FOREIGN KEY(userID) REFERENCES user (id));`
+	sqlStmt = `CREATE TABLE IF NOT EXISTS photo (id INTEGER NOT NULL PRIMARY KEY, userID INTEGER NOT NULL, binary BLOB NOT NULL, timestamp DATETIME, FOREIGN KEY(userID) REFERENCES user (id));`
 	_, err = db.Exec(sqlStmt)
 
 	if err != nil {

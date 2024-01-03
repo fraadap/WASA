@@ -24,7 +24,7 @@ func (db *appdbimpl) NewComment(userID int, photoID int, text string, TimeStamp 
 
 func (db *appdbimpl) DeleteComment(commentID int, photoID int, userID int) error {
 
-	ris, err := db.c.Exec("DELETE FROM comment WHERE userID=? AND photoid=? AND id=?", userID, photoID, commentID)
+	ris, err := db.c.Exec("DELETE FROM comment WHERE id=?", commentID)
 
 	if err != nil {
 		return err
@@ -43,14 +43,14 @@ func (db *appdbimpl) DeleteComment(commentID int, photoID int, userID int) error
 func (db *appdbimpl) GetComments(photoID int) ([]structs.Comment, error) {
 	var comments []structs.Comment
 
-	queryUser := "SELECT * FROM comment WHERE photoID = ?"
+	queryUser := "SELECT comment.id, comment.userID, user.username,  comment.photoID, comment.text, comment.timestamp FROM comment, user WHERE photoID = ? AND user.id = comment.userID"
 	comms, err := db.c.Query(queryUser, photoID)
 	if err != nil || comms.Err() != nil {
 		return comments, err
 	}
 	for comms.Next() {
 		var c structs.Comment
-		err := comms.Scan(&c.CommentID, &c.UserID, &c.PhotoID, &c.Text, &c.TimeStamp)
+		err := comms.Scan(&c.CommentID, &c.User.Id, &c.User.Username, &c.PhotoID, &c.Text, &c.TimeStamp)
 		if err != nil {
 			return comments, err
 		}

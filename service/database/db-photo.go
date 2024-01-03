@@ -2,38 +2,40 @@ package database
 
 import (
 	"database/sql"
-	"errors"
 
 	"github.com/fraadap/WASA/service/structs"
-	"github.com/mattn/go-sqlite3"
 )
 
-func (db *appdbimpl) NewPhoto(id int, path string, timestamp string) (int, error) {
+func (db *appdbimpl) NewPhoto(id int, binary []byte, timestamp string) (int, error) {
 
 	var photoID = 0
-	er1 := db.c.QueryRow("SELECT id FROM photo WHERE path=?", path).Scan(&photoID)
-	if errors.Is(er1, sql.ErrNoRows) {
 
-		res, err := db.c.Exec("INSERT INTO photo (userID,path,timestamp) VALUES (?,?,?)", id, path, timestamp)
+	res, err := db.c.Exec("INSERT INTO photo (userID,binary,timestamp) VALUES (?,?,?)", id, binary, timestamp)
 
-		if err != nil {
-			return photoID, err
-		}
-
-		t, _ := res.LastInsertId()
-		photoID = int(t)
-
+	if err != nil {
 		return photoID, err
-	} else {
-		er1 = sqlite3.ErrConstraintUnique
-		return photoID, er1
 	}
+
+	t, _ := res.LastInsertId()
+	photoID = int(t)
+
+	return photoID, err
 
 }
 
 func (db *appdbimpl) DeletePhoto(id int, photoId int) error {
 
-	ris, err := db.c.Exec("DELETE FROM photo WHERE userID=? AND id=?", id, photoId)
+	_, err := db.c.Exec("DELETE FROM like WHERE photoID=?", photoId)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.c.Exec("DELETE FROM comment WHERE photoID=?", photoId)
+	if err != nil {
+		return err
+	}
+
+	ris, err := db.c.Exec("DELETE FROM photo WHERE id=?", photoId)
 
 	if err != nil {
 		return err
@@ -43,18 +45,9 @@ func (db *appdbimpl) DeletePhoto(id int, photoId int) error {
 			err1 := sql.ErrNoRows
 			return err1
 		} else {
-			_, err = db.c.Exec("DELETE FROM like WHERE photoID=", photoId)
-			if err != nil {
-				return err
-			}
-			_, err = db.c.Exec("DELETE FROM comment WHERE photoID=", photoId)
-			if err != nil {
-				return err
-			}
+			return nil
 		}
 	}
-
-	return nil
 
 }
 
@@ -75,7 +68,7 @@ func (db *appdbimpl) GetMyStream(id int) (structs.Stream, error) {
 	}
 
 	// query per le foto dell'utente
-	queryPhotos := "SELECT photo.id, photo.userID, photo.path, photo.timestamp FROM photo, follow WHERE photo.userID=follow.followed AND follow.userID=? ORDER BY photo.timestamp DESC"
+	queryPhotos := "SELECT photo.id, photo.userID, photo.binary, photo.timestamp FROM photo, follow WHERE photo.userID=follow.followed AND follow.userID=? ORDER BY photo.timestamp DESC"
 	photos, err := db.c.Query(queryPhotos, id)
 	if err != nil || photos.Err() != nil {
 		return st, err
@@ -83,7 +76,7 @@ func (db *appdbimpl) GetMyStream(id int) (structs.Stream, error) {
 
 	for photos.Next() {
 		var ph structs.PhotoInfo
-		err := photos.Scan(&ph.Photo.PhotoID, &ph.Photo.UserID, &ph.Photo.Path, &ph.Photo.TimeStamp)
+		err := photos.Scan(&ph.Photo.PhotoID, &ph.Photo.UserID, &ph.Photo.Binary, &ph.Photo.TimeStamp)
 		if err != nil {
 			return st, err
 		}
