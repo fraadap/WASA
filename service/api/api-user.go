@@ -124,24 +124,16 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 			continue
 		}
 		p, err := rt.db.GetProfile(u.Id)
-		banned := false
+
 		if err != nil {
 			fmt.Print(err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		for _, b := range p.Bans {
-			if b.Id == token {
-				banned = true
-				break
-			}
-		}
-		if !banned {
-			p.Bans = nil
-			p.Photos = nil
-			profiles = append(profiles, p)
-			banned = false
-		}
+		p.Bans = nil
+		p.Photos = nil
+		profiles = append(profiles, p)
+
 	}
 	sort.Slice(profiles, func(i, j int) bool {
 		return len(profiles[i].Followers) > len(profiles[j].Followers)

@@ -1,15 +1,15 @@
 <script>
 import LoadingSpinner from "../components/LoadingSpinner.vue"
 import { RouterLink } from 'vue-router';
+import ErrorMsg from "../components/ErrorMsg.vue"
 
 export default {
-	components: LoadingSpinner,
+	components: LoadingSpinner,ErrorMsg,
 	data: function () {
 		return {
 			errormsg: null,
 			msg: null,
 			loading: false,
-			some_data: null,
 			stream: {},
 			username: "",
 			myID: parseInt(localStorage.getItem("token")),
@@ -18,6 +18,10 @@ export default {
 	},
 	methods: {
 		async refresh() {
+			if (!(localStorage.getItem("token") > 0)) {
+				this.$router.push({ path: '/#/' });
+				return
+			}
 			this.loading = true;
 			this.errormsg = null;
 			try {
@@ -44,7 +48,7 @@ export default {
 				ph.nComments--;
 			}
 			catch (e) {
-				alert(e);
+				this.errormsg = "There are problems with the uncomment request...";
 			}
 
 		},
@@ -72,7 +76,8 @@ export default {
 				ph.nComments++;
 			}
 			catch (e) {
-				alert(e);
+				this.errormsg = "There are problems with the comment request...";
+
 			}
 
 		},
@@ -115,7 +120,8 @@ export default {
 					ph.nLikes--;
 				}
 				catch (e) {
-					alert(e);
+					this.errormsg = "There are problems with the unlike request...";
+
 				}
 			}
 			else {
@@ -140,26 +146,12 @@ export default {
 					ph.nLikes++;
 				}
 				catch (e) {
-					alert(e);
+					this.errormsg = "There are problems with the unlike request...";
+
 				}
 			}
 
 		},
-		async setUsername(id) {
-			try {
-				let response = await this.$axios.post('/users/' + id + "/username",
-					{
-						headers: {
-							Authorization: this.myID
-						}
-					});
-				this.usernames[id] = response.data
-				console.log(this.usernames[id])
-			}
-			catch (e) {
-				alert(e);
-			}
-		}
 	},
 	mounted() {
 		this.refresh()
@@ -168,17 +160,18 @@ export default {
 </script>
 
 <template>
-	<LoadingSpinner :loading="this.loading"></LoadingSpinner>
 
 	<h2 class="my-3">Benvenuto/a {{ this.username }}!</h2>
 
-	<div class="card mt-5" v-for="ph in this.stream.photos">
-		<div class="card-header" style="margin-left:0">
+	<LoadingSpinner :loading="this.loading"></LoadingSpinner>
+	
+	<div class="card mt-5 container" v-for="ph in this.stream.photos">
+		<div class="card-header">
 			<RouterLink :to="'/profile/' + ph.photo.user.userID" class="nav-link" :us="ph.photo.user.userID">
 				<h3>{{ ph.photo.user.username }}</h3>
 			</RouterLink>
 		</div>
-		<div class="container overflow-auto">
+		<div class="overflow-auto">
 			<!-- Left Box -->
 			<div class="row overflow-auto">
 				<div class="col">
@@ -192,9 +185,9 @@ export default {
 				</div>
 
 				<!-- Right Box -->
-				<div class="col-md-8 overflow-auto" style="width: 50%;">
+				<div class="col-md-8 overflow-auto" style="width:60%">
 					<h2 class="mb-2">Comments</h2>
-					<div style="height:500px; max-height: 500px; overflow-y:auto">
+					<div style="height:500px; max-height: 70%; overflow-y:auto">
 						<div class="card mb-3" v-for="c in ph.comments">
 							<div class="container">
 								<div class="row p-3">

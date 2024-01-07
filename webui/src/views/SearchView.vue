@@ -16,7 +16,6 @@ export default {
     },
     methods: {
         async search() {
-
             if (this.inputSearch == "") { this.users = []; return }
             if (this.cacheUsers[this.inputSearch] == null) {
                 this.loading = true
@@ -43,8 +42,14 @@ export default {
             }
 
 
-        }
+        },
     },
+    mounted() {
+        if (!(localStorage.getItem("token") > 0)) {
+            this.$router.push({ path: '/#/' });
+            return
+        }
+    }
 }
 
 </script>   
@@ -55,8 +60,8 @@ export default {
         <input type="text" id="searchInput" v-model="inputSearch" v-on:keyup="this.search()" class="form-control mb-4"
             placeholder="Cerca utenti..." style="width:20%">
 
-        <div class="card user-card my-3" v-for="u in users">
-            <RouterLink :to="'/profile/'+u.user.userID" class="nav-link" :us="u.user.userID">
+        <div class="card user-card my-3" v-for="u in users" v-if="users!=null">
+            <RouterLink :to="'/profile/' + u.user.userID" class="nav-link" :us="u.user.userID">
                 <div class="card-body">
                     <div class="container mt-3 text-center">
                         <div class="row">

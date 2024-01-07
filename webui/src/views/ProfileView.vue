@@ -2,10 +2,12 @@
 import { RouterLink } from 'vue-router';
 import ErrorMsg from '../components/ErrorMsg.vue';
 import Msg from '../components/Msg.vue';
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+
 
 export default {
   props: ['userID'],
-  components: ErrorMsg,Msg,
+  components: ErrorMsg, Msg,
   data: function () {
     return {
       errormsg: null,
@@ -23,7 +25,6 @@ export default {
   methods: {
     async amIBanned() {
       this.imBanned = false
-      let b;
       if (this.profile.bans == null) { return false }
       for (let i = 0; i < this.profile.bans.length; i++) {
 
@@ -34,6 +35,7 @@ export default {
     },
     async load() {
       try {
+        this.loading = true
         let response = await this.$axios.get('/users/' + this.myID,
           { headers: { Authorization: this.myID } });
         this.myProfile = response.data;
@@ -49,10 +51,11 @@ export default {
         }
         console.log(this.profile)
         this.amIBanned()
-
+        this.loading = false
       }
       catch (e) {
-        alert("Error: " + e);
+        this.errormsg = "There are problems with the profile's loading...";
+
       }
 
     },
@@ -61,18 +64,19 @@ export default {
     },
     async submitPhoto() {
       if (this.images === null) {
-        alert("No photo selected");
+        this.errormsg = "Please select a photo";
       } else {
         try {
-          let response = await this.$axios.post("/users/" + this.myID + "/photos", this.image, {
+          await this.$axios.post("/users/" + this.myID + "/photos", this.image, {
             headers: {
               Authorization: this.myID
             }
           })
           this.load();
-          this.msg="Photo upload succesfully";
+          this.msg = "Photo uploaded succesfully";
         } catch (e) {
-          alert(e)
+          this.errormsg = "There are problems with the photo's uploading...";
+
         }
       }
 
@@ -91,7 +95,6 @@ export default {
     },
     isBanned(id) {  //implementare ban e unban
       let yes = false;
-      let b;
       if (this.myProfile.bans == null) { return false }
       for (let i = 0; i < this.myProfile.bans.length; i++) {
 
@@ -111,7 +114,7 @@ export default {
           });
         let followID = response.data.followID
 
-        let res = await this.$axios.delete('/users/' + this.myID + "/follow/" + followID,
+        await this.$axios.delete('/users/' + this.myID + "/follow/" + followID,
           {
             headers: {
               Authorization: this.myID
@@ -119,10 +122,11 @@ export default {
           });
 
         this.load();
-        this.msg="User unfollowed succesfully";
+        this.msg = "User unfollowed succesfully";
       }
       catch (e) {
-        alert("Error: " + e);
+        this.errormsg = "There are problems with the unfollow request...";
+
       }
     },
     async follow(id) {
@@ -138,12 +142,12 @@ export default {
         this.load();
       }
       catch (e) {
-        alert("You can't follow the user because he banned you");
+        alert("You can't follow the user because he banned you :(");
       }
     },
     async ban(id) {
       try {
-        let response = await this.$axios.post('/users/' + this.myID + "/bans", {
+        await this.$axios.post('/users/' + this.myID + "/bans", {
           banned: id,
         },
           {
@@ -151,11 +155,13 @@ export default {
               Authorization: this.myID
             }
           });
+          this.load()
       }
       catch (e) {
-        alert(e);
+        this.errormsg = "There are problems with the ban request...";
+
       }
-      this.load()
+
     },
     async unban(id) {
       try {
@@ -166,7 +172,7 @@ export default {
             }
           });
         let banID = response.data.banID
-        let res = await this.$axios.delete('/users/' + this.myID + "/bans/" + banID,
+        await this.$axios.delete('/users/' + this.myID + "/bans/" + banID,
           {
             headers: {
               Authorization: this.myID
@@ -176,7 +182,8 @@ export default {
         this.load();
       }
       catch (e) {
-        alert("Error: " + e);
+        this.errormsg = "There are problems with the unban request...";
+
       }
     },
     getLikeID(ph) {
@@ -201,7 +208,8 @@ export default {
             });
         }
         catch (e) {
-          alert(e);
+          this.errormsg = "There are problems with the unlike request...";
+
         }
       }
       else {
@@ -218,7 +226,8 @@ export default {
             });
         }
         catch (e) {
-          alert(e);
+          this.errormsg = "There are problems with the like request...";
+
         }
       }
       this.load()
@@ -232,10 +241,10 @@ export default {
             }
           });
         this.load()
-        this.msg="Photo deleted succesfully";
+        this.msg = "Photo deleted succesfully";
       }
       catch (e) {
-        alert(e);
+        this.errormsg = "There are problems with deleting the photo..";
       }
 
     },
@@ -275,10 +284,11 @@ export default {
         } else {
           this.modalComments.comments.push(response.data);
         }
-        this.msg="Commented succesfully";
+        this.msg = "Commented succesfully";
       }
       catch (e) {
-        alert(e);
+        this.errormsg = "There are problems with the comment's uploading...";
+
       }
 
     },
@@ -293,14 +303,19 @@ export default {
           });
         this.load();
         this.modalComments.comments = this.modalComments.comments.filter(com => com.commentID !== c.commentID);
-        this.msg="Comment deleted succesfully";
+        this.msg = "Comment deleted succesfully";
       }
       catch (e) {
-        alert(e);
+        this.errormsg = "There are problems with the comment's deleting...";
+
       }
     },
   },
   mounted() {
+    if (!(localStorage.getItem("token") > 0)) {
+      this.$router.push({ path: '/#/' });
+      return
+    }
     this.load();
   },
   watch: {
@@ -317,8 +332,8 @@ export default {
 </script>
 
 <template>
-    <Msg :msg="this.msg" v-if="this.msg"></Msg>
-    
+  <Msg :msg="this.msg" v-if="this.msg"></Msg>
+
   <div v-if="!this.imBanned">
     <div class="container mt-5 text-center">
       <div class="row">
@@ -352,7 +367,7 @@ export default {
         </div>
       </div>
     </div>
-
+    <LoadingSpinner :load="this.loading"></LoadingSpinner>
     <!--Sezione Foto -->
     <div class="border-top mt-5 mb-5"></div>
 
@@ -573,7 +588,6 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization:4" -d '{"foll
     </div>
   </div>
   <ErrorMsg v-else :msg='"Ops! Its seem like you are banned from the user " + profile.user.username + " :("'></ErrorMsg>
-
 </template>
 
 <style>

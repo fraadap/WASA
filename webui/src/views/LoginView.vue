@@ -18,6 +18,8 @@ export default {
         });
         localStorage.setItem("token", response.data)
         console.log("ID logged: " + response.data)
+        this.$router.push({ path: '/home' });
+
       }
       catch (e) {
         alert("Error: " + e);
@@ -43,9 +45,9 @@ export default {
       <div class="mb-3">
         <input type="text" class="form-control" id="username-input" placeholder="Username" v-model="username">
       </div>
-      <RouterLink to="/home" class="nav-link">
+
         <button type="button" class="btn btn-success" id="login-button" @click="this.login">Login</button>
-      </RouterLink>
+
     </div>
   </div>
 </template>
