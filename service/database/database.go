@@ -46,6 +46,7 @@ type AppDatabase interface {
 	SetUsername(id int, username string) error
 	ExistsUser(userID int) (bool, error)
 	GetUsername(id int) (string, error)
+	SearchUsers(text string) ([]structs.User, error)
 	NewFollow(id int, followedId int, timestamp string) (int, error)
 	DeleteFollow(id int, followId int) error
 	GetFollowID(id int, followed int) (int, error)

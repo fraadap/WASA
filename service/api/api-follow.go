@@ -40,8 +40,6 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	f.UserID = id
-
 	// controllo se l'utente è bannato dalla persona che vuole seguire
 	if banned, er1 := rt.db.IsBanned(f.Followed, id); banned {
 		w.WriteHeader(http.StatusForbidden)
@@ -50,6 +48,8 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	f.UserID = id
 
 	if f.TimeStamp == "" {
 		f.TimeStamp = time.Now().UTC().Format("2006-01-02T15:04:05Z")
@@ -135,15 +135,6 @@ func (rt *_router) getFollowID(w http.ResponseWriter, r *http.Request, ps httpro
 
 	if f.UserID != token && f.Followed != token {
 		w.WriteHeader(http.StatusForbidden)
-		return
-	}
-
-	// controllo se l'utente è bannato dalla persona che vuole seguire
-	if banned, er1 := rt.db.IsBanned(f.Followed, id); banned {
-		w.WriteHeader(http.StatusForbidden)
-		return
-	} else if er1 != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 

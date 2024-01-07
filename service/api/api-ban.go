@@ -128,15 +128,6 @@ func (rt *_router) getBanID(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	// controllo se l'utente è bannato dalla persona che vuole seguire
-	if banned, er1 := rt.db.IsBanned(b.Banned, id); banned {
-		w.WriteHeader(http.StatusForbidden)
-		return
-	} else if er1 != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	var err1 error
 	b.BanID, err1 = rt.db.GetBanID(b.UserID, b.Banned)
 	if err1 != nil {

@@ -17,7 +17,7 @@ type Follow struct {
 // struttura della foto
 type Photo struct {
 	PhotoID   int    `json:"photoID"`   // id della foto
-	UserID    int    `json:"userID"`    // id dell'utente proprietario della foto
+	User      User   `json:"user"`      // utente proprietario della foto
 	Binary    []byte `json:"binary"`    // codifica binaria della foto
 	TimeStamp string `json:"timestamp"` // timestamp di quando è stata postata la foto
 }

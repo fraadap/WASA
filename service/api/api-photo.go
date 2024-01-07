@@ -45,7 +45,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	ph.TimeStamp = time.Now().UTC().Format("2006-01-02T15:04:05Z")
 	var err1 error
 	ph.PhotoID, err1 = rt.db.NewPhoto(id, ph.Binary, ph.TimeStamp)
-	ph.UserID = id
+	ph.User.Id = id
 	if err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -110,6 +110,21 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
+	var phFiltered []structs.PhotoInfo
+
+	for _, ph := range st.Photos {
+		banned, err := rt.db.IsBanned(ph.Photo.User.Id, id)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		if !banned {
+			phFiltered = append(phFiltered, ph)
+		}
+
+	}
+
+	st.Photos = phFiltered
 
 	w.Header().Set("content-type", "application/json")
 	_ = json.NewEncoder(w).Encode(st)

@@ -78,7 +78,7 @@ func (db *appdbimpl) GetProfile(ID int) (structs.Profile, error) {
 	// per ogni foto creo un tipo foto, per ogni foto prendo i commenti e i like
 	for photos.Next() {
 		var ph structs.PhotoInfo
-		err := photos.Scan(&ph.Photo.PhotoID, &ph.Photo.UserID, &ph.Photo.Binary, &ph.Photo.TimeStamp)
+		err := photos.Scan(&ph.Photo.PhotoID, &ph.Photo.User.Id, &ph.Photo.Binary, &ph.Photo.TimeStamp)
 		if err != nil {
 			return profile, err
 		}
@@ -154,4 +154,23 @@ func (db *appdbimpl) GetUsername(id int) (string, error) {
 		return username, err
 	}
 	return username, err
+}
+
+func (db *appdbimpl) SearchUsers(text string) ([]structs.User, error) {
+	var users []structs.User
+	queryUser := "SELECT id, username FROM user WHERE username LIKE ?"
+	result, err := db.c.Query(queryUser, text+"%")
+	if err != nil {
+		return nil, err
+	}
+
+	for result.Next() {
+		var u structs.User
+		err := result.Scan(&u.Id, &u.Username)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+	return users, nil
 }

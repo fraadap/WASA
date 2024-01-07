@@ -2,8 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/fraadap/WASA/service/api/reqcontext"
@@ -24,10 +26,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	token := getToken(r.Header.Get("Authorization"))
-	if token != id {
-		pr.Bans = nil
-	}
+
 	w.Header().Set("content-type", "application/json")
 	e := json.NewEncoder(w).Encode(pr)
 	if e != nil {
@@ -45,11 +44,6 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 	token := getToken(r.Header.Get("Authorization"))
 
-	if id != token {
-		w.WriteHeader(http.StatusForbidden)
-		return
-	}
-
 	body, er := io.ReadAll(r.Body)
 	if er != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -61,6 +55,11 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 	if err0 != nil || u.Username == "" {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if id != token || u.Id != token {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
@@ -102,4 +101,57 @@ func (rt *_router) getUsernameByID(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
+}
+
+func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+
+	text := ps.ByName("text")
+
+	token := getToken(r.Header.Get("Authorization"))
+
+	users, err := rt.db.SearchUsers(text)
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Print(err.Error())
+		return
+	}
+
+	var profiles []structs.Profile
+
+	for _, u := range users {
+		if u.Id == token {
+			continue
+		}
+		p, err := rt.db.GetProfile(u.Id)
+		banned := false
+		if err != nil {
+			fmt.Print(err.Error())
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		for _, b := range p.Bans {
+			if b.Id == token {
+				banned = true
+				break
+			}
+		}
+		if !banned {
+			p.Bans = nil
+			p.Photos = nil
+			profiles = append(profiles, p)
+			banned = false
+		}
+	}
+	sort.Slice(profiles, func(i, j int) bool {
+		return len(profiles[i].Followers) > len(profiles[j].Followers)
+	})
+
+	// manca il sort per numero di followers
+	w.Header().Set("content-type", "application/json")
+	e := json.NewEncoder(w).Encode(profiles)
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }

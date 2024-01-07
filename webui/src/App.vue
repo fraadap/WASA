@@ -40,11 +40,11 @@ export default {}
 							</RouterLink>
 						</li>
 						<li class="nav-item">
-							<RouterLink to="/home" class="nav-link">
+							<RouterLink to="/settings" class="nav-link">
 								<svg class="feather">
-									<use href="/feather-sprite-v4.29.0.svg#key" />
+									<use href="/feather-sprite-v4.29.0.svg#settings" />
 								</svg>
-								Menu item 2
+								Settings
 							</RouterLink>
 						</li>
 					</ul>

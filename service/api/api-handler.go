@@ -15,6 +15,8 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/users/:userID", rt.wrap(rt.setMyUsername))  // 2)fatto
 	rt.router.GET("/users/:userID/username", rt.wrap(rt.getUsernameByID))
 
+	rt.router.GET("/search/:text", rt.wrap(rt.searchUsers))
+
 	// followers section
 	rt.router.POST("/users/:userID/follow", rt.wrap(rt.followUser))               // 3)fatto
 	rt.router.DELETE("/users/:userID/follow/:followID", rt.wrap(rt.unfollowUser)) // 4)fatto
