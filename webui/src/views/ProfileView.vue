@@ -2,7 +2,6 @@
 import { RouterLink } from 'vue-router';
 import ErrorMsg from '../components/ErrorMsg.vue';
 import Msg from '../components/Msg.vue';
-import LoadingSpinner from '../components/LoadingSpinner.vue'
 
 
 export default {
@@ -12,7 +11,6 @@ export default {
     return {
       errormsg: null,
       msg: null,
-      loading: false,
       profile: {},
       myProfile: {},
       us: parseInt(this.userID),
@@ -35,7 +33,6 @@ export default {
     },
     async load() {
       try {
-        this.loading = true
         let response = await this.$axios.get('/users/' + this.myID,
           { headers: { Authorization: this.myID } });
         this.myProfile = response.data;
@@ -51,7 +48,6 @@ export default {
         }
         console.log(this.profile)
         this.amIBanned()
-        this.loading = false
       }
       catch (e) {
         this.errormsg = "There are problems with the profile's loading...";
@@ -67,11 +63,12 @@ export default {
         this.errormsg = "Please select a photo";
       } else {
         try {
-          await this.$axios.post("/users/" + this.myID + "/photos", this.image, {
-            headers: {
-              Authorization: this.myID
-            }
-          })
+          await this.$axios.post("/users/" + this.myID + "/photos", this.image,
+            {
+              headers: {
+                Authorization: this.myID
+              }
+            })
           this.load();
           this.msg = "Photo uploaded succesfully";
         } catch (e) {
@@ -155,7 +152,7 @@ export default {
               Authorization: this.myID
             }
           });
-          this.load()
+        this.load()
       }
       catch (e) {
         this.errormsg = "There are problems with the ban request...";
@@ -367,7 +364,6 @@ export default {
         </div>
       </div>
     </div>
-    <LoadingSpinner :load="this.loading"></LoadingSpinner>
     <!--Sezione Foto -->
     <div class="border-top mt-5 mb-5"></div>
 

@@ -141,7 +141,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/Follow/properties/followID'
+                $ref: '#/components/schemas/Follow'
         '400':
           description: 'Bad request - Invalid data provided'
         '403':
@@ -219,7 +219,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/Photo/properties/photoID'
+                $ref: '#/components/schemas/Photo'
         '400':
           description: 'Bad request - Invalid data provided'
 
@@ -283,7 +283,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/Comment/properties/commentID'
+                $ref: '#/components/schemas/Comment'
         '400':
           description: 'Bad request - Invalid data provided'
         '403':
@@ -355,7 +355,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/Like/properties/likeID'
+                $ref: '#/components/schemas/Like'
         '400':
           description: 'Bad request - Invalid data provided'
         '403':
@@ -421,7 +421,7 @@ paths:
           content:
             application/json: 
               schema:
-                 $ref: '#/components/schemas/Ban/properties/banID'
+                 $ref: '#/components/schemas/Ban'
         '400':
           description: 'Invalid userID'
 
@@ -508,11 +508,11 @@ components:
       properties:
         photoID:
           type: integer
-          description: 'Photo identifier'
+          description: 'Photo idenFtifier'
           example: 222
           minimum: 1  
-        userID:
-          $ref: '#/components/schemas/User/properties/userID' 
+        user:
+          $ref: '#/components/schemas/User' 
         binary:
           type: string
           description: 'binary codification of the photo'
@@ -547,8 +547,8 @@ components:
           maxLength: 300
           example: 'Great API!'
           pattern: '^.*?$'
-        userID:
-          $ref: '#/components/schemas/User/properties/userID'
+        user:
+          $ref: '#/components/schemas/User'
         timestamp:
           type: string
           format: date-time
@@ -613,7 +613,7 @@ components:
           minItems: 0
           maxItems: 1000 
           items:
-            $ref: '#/components/schemas/Photo'
+            $ref: '#/components/schemas/PhotoInfo'
         followers:
           type: array
           description: "User's followers"
@@ -633,6 +633,13 @@ components:
           description: 'Number of photos'
           example: 12
           minimum: 0
+        bans:
+          type: array
+          description: "User's bans"
+          minItems: 0
+          maxItems: 1000 
+          items:
+            $ref: '#/components/schemas/User'
           
     Stream:
       type: object
