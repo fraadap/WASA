@@ -15,7 +15,7 @@ export default {}
 	</header>
 
 	<div class="container-fluid">
-		<div class="row" v-if="this.$route.path != '/'"> <!-- Se non sto nella pagina iniziale carica la navbar-->
+		<div class="row" v-if="$route.path != '/'"> <!-- Se non sto nella pagina iniziale carica la navbar-->
 			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="background: linear-gradient( #063ca7, #933af9);">
 				<div>
 					<h6 class="sidebar-heading d-flex text-center justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
