@@ -514,7 +514,7 @@ components:
         userID:
           $ref: '#/components/schemas/User/properties/userID' 
         binary:
-          type: binary
+          type: string
           description: 'binary codification of the photo'
           minLength: 13
           maxLength: 1000000
