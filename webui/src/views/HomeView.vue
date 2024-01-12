@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 import ErrorMsg from "../components/ErrorMsg.vue"
 
 export default {
-	components: LoadingSpinner,ErrorMsg,
+	components: LoadingSpinner, ErrorMsg,
 	data: function () {
 		return {
 			errormsg: null,
@@ -19,7 +19,7 @@ export default {
 	methods: {
 		async refresh() {
 			if (!(localStorage.getItem("token") > 0)) {
-				this.$router.push({ path: '/#/' });
+				this.$router.push({ path: '/' });
 				return
 			}
 			this.loading = true;
@@ -160,12 +160,11 @@ export default {
 </script>
 
 <template>
-
 	<h2 class="my-3">Benvenuto/a {{ this.username }}!</h2>
 
 	<LoadingSpinner :loading="this.loading"></LoadingSpinner>
-	
-	<div class="card mt-5 container" v-for="ph in this.stream.photos">
+
+	<div class="card mt-5 container" v-for="ph in this.stream.photos" :key="ph.photo.photoID">
 		<div class="card-header">
 			<RouterLink :to="'/profile/' + ph.photo.user.userID" class="nav-link" :us="ph.photo.user.userID">
 				<h3>{{ ph.photo.user.username }}</h3>
@@ -188,7 +187,7 @@ export default {
 				<div class="col-md-8 overflow-auto" style="width:60%">
 					<h2 class="mb-2">Comments</h2>
 					<div style="height:500px; max-height: 70%; overflow-y:auto">
-						<div class="card mb-3" v-for="c in ph.comments">
+						<div class="card mb-3" v-for="c in ph.comments" :key="c.commentID">
 							<div class="container">
 								<div class="row p-3">
 									<RouterLink :to="'/profile/' + c.user.userID" class="nav-link" :us="c.user.userID">
@@ -201,8 +200,8 @@ export default {
 									<div class="col">{{ c.text }}</div>
 								</div>
 								<div class="row p-2">
-									<div class="col-9 col-md-9"><button type="button"
-											class="btn btn-outline-danger delete-btn" v-if="c.user.userID == this.myID"
+									<div class="col-9 col-md-9" v-if="c.user.userID == this.myID">
+										<button type="button" class="btn btn-outline-danger delete-btn"
 											@click="this.deleteComment(ph, c)">Delete
 											comment</button>
 									</div>

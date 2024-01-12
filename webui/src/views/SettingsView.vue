@@ -1,7 +1,6 @@
 <script>
 import ErrorMsg from '../components/ErrorMsg.vue';
 import Msg from '../components/Msg.vue';
-import { RouterLink } from 'vue-router';
 
 export default {
     components: ErrorMsg, Msg,
@@ -51,7 +50,7 @@ export default {
         },
         logout() {
             localStorage.setItem("token", null)
-            this.$router.push({ path: '/#/' });
+            this.$router.push({ path: '/' });
         },
         isBanned(id) {  //implementare ban e unban
             let yes = false;
@@ -89,7 +88,7 @@ export default {
     },
     mounted() {
         if (!(localStorage.getItem("token") > 0)) {
-            this.$router.push({ path: '/#/' });
+            this.$router.push({ path: '/' });
             return
         }
         this.load()
@@ -145,7 +144,7 @@ export default {
                             <div class="col">
 
 
-                                <div class="card mb-3" v-for="user in this.profile.bans" v-if="this.profile.bans != null">
+                                <div class="card mb-3" v-for="user in this.profile.bans" v-if="this.profile.bans != null" :key="user.userID">
                                     <div class="card-body d-flex align-items-center justify-content-between">
                                         <div class="me-5 p-2 bd-highlight">
                                             <h5 class="card-title">{{ user.username }}</h5>

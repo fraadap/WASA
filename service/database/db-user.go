@@ -160,7 +160,7 @@ func (db *appdbimpl) SearchUsers(text string) ([]structs.User, error) {
 	var users []structs.User
 	queryUser := "SELECT id, username FROM user WHERE username LIKE ?"
 	result, err := db.c.Query(queryUser, text+"%")
-	if err != nil {
+	if err != nil || result.Err() != nil {
 		return nil, err
 	}
 

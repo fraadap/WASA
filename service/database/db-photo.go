@@ -54,7 +54,10 @@ func (db *appdbimpl) DeletePhoto(id int, photoId int) error {
 func (db *appdbimpl) UserIDByPhoto(photoID int) (int, error) {
 	var id int
 	err := db.c.QueryRow("SELECT userID FROM photo WHERE id=?", photoID).Scan(&id)
-	return id, err
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
 func (db *appdbimpl) GetMyStream(id int) (structs.Stream, error) {

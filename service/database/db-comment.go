@@ -63,5 +63,8 @@ func (db *appdbimpl) GetOwnerFromCommentID(commentID int) (int, error) {
 	var owner int
 	queryUser := "SELECT userID FROM comment WHERE id = ?"
 	err := db.c.QueryRow(queryUser, commentID).Scan(&owner)
-	return owner, err
+	if err != nil {
+		return 0, err
+	}
+	return owner, nil
 }

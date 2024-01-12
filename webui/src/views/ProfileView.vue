@@ -310,7 +310,7 @@ export default {
   },
   mounted() {
     if (!(localStorage.getItem("token") > 0)) {
-      this.$router.push({ path: '/#/' });
+      this.$router.push({ path: '/' });
       return
     }
     this.load();
@@ -373,7 +373,7 @@ export default {
         <!-- Photo -->
 
         <!-- List of photos -->
-        <div class="col-md-4 mb-3" v-for="ph in profile.photos">
+        <div class="col-md-4 mb-3" v-for="ph in profile.photos" :key="ph.photo.photoID">
           <div class="custom-square">
             <div class="custom-content">
               <div class="image-wrapper">
@@ -394,9 +394,8 @@ export default {
                 <use href="/feather-sprite-v4.29.0.svg#message-circle" />
               </svg>
             </div>
-            <div class="d-flex flex-row-reverse" style="margin-left:55%">
-              <svg style=" width:30px; cursor:pointer" fill="none" stroke="white" @click="deletePhoto(ph)"
-                v-if="this.us == this.myID || this.us == 0">
+            <div class="d-flex flex-row-reverse" style="margin-left:55%" v-if="this.us == this.myID || this.us == 0">
+              <svg style=" width:30px; cursor:pointer" fill="none" stroke="white" @click="deletePhoto(ph)">
                 <use href="/feather-sprite-v4.29.0.svg#trash-2" />
               </svg>
             </div>
@@ -430,11 +429,6 @@ export default {
       </div>
     </div>
 
-
-    <!-- List of followers
-curl -X POST -H "Content-Type: application/json" -H "Authorization:4" -d '{"followed":2}' http://localhost:3000/users/4/follow -i
--->
-
     <div class="modal fade" id="followersModal" tabindex="-1" role="dialog" aria-labelledby="followersModalLabel"
       aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -450,7 +444,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization:4" -d '{"foll
               <div class="row">
                 <div class="col">
 
-                  <div class="card mb-3" v-for="user in this.profile.followers" v-if="this.profile.followers != null">
+                  <div class="card mb-3" v-for="user in this.profile.followers" v-if="this.profile.followers != null" :key="user.userID">
                     <div class="card-body d-flex align-items-center justify-content-between">
                       <div class="me-5 p-2 bd-highlight">
                         <RouterLink :to="'/profile/' + user.userID" class="nav-link" :us="user.userID"
@@ -501,7 +495,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization:4" -d '{"foll
                 <div class="col">
 
 
-                  <div class="card mb-3" v-for="user in this.profile.followings" v-if="this.profile.followings != null">
+                  <div class="card mb-3" v-for="user in this.profile.followings" v-if="this.profile.followings != null" :key="user.userID">
                     <div class="card-body d-flex align-items-center justify-content-between">
                       <div class="me-5 p-2 bd-highlight">
                         <RouterLink :to="'/profile/' + user.userID" class="nav-link" :us="user.userID"
@@ -548,7 +542,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization:4" -d '{"foll
           </div>
           <div class="modal-body overflow-auto">
 
-            <div class="mb-3 card" v-for="c in modalComments.comments">
+            <div class="mb-3 card" v-for="c in modalComments.comments" :key="c.commentID">
               <div class="container">
                 <div class="row p-1">
 
@@ -558,8 +552,8 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization:4" -d '{"foll
                       data-dismiss="modal" @click="this.us = c.user.userID; this.load()">
                       <h5 style=""> {{ c.user.username }} </h5>
                     </RouterLink>
-                    <div class="col">
-                      <button type="button" class="btn btn-outline-danger delete-btn" v-if="c.user.userID == this.myID"
+                    <div class="col" v-if="c.user.userID == this.myID">
+                      <button type="button" class="btn btn-outline-danger delete-btn"
                         @click="this.deleteComment(c)">Delete comment</button>
                     </div>
                   </div>

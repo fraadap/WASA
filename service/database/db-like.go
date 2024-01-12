@@ -71,5 +71,8 @@ func (db *appdbimpl) GetOwnerFromLikeID(likeID int) (int, error) {
 	var owner int
 	queryUser := "SELECT userID FROM like WHERE id = ?"
 	err := db.c.QueryRow(queryUser, likeID).Scan(&owner)
-	return owner, err
+	if err != nil {
+		return 0, nil
+	}
+	return owner, nil
 }

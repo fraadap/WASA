@@ -45,7 +45,10 @@ func (db *appdbimpl) DeleteBan(id int, banID int) error {
 func (db *appdbimpl) IsBanned(userID int, bannedID int) (bool, error) {
 	var ban bool
 	err := db.c.QueryRow("SELECT COUNT(*)=1 FROM ban WHERE userID=? AND banned=?", userID, bannedID).Scan(&ban)
-	return ban, err
+	if err != nil {
+		return ban, err
+	}
+	return false, nil
 }
 
 func (db *appdbimpl) GetBanID(id int, banned int) (int, error) {

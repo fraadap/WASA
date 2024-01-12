@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"sort"
@@ -113,7 +112,6 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Print(err.Error())
 		return
 	}
 
@@ -126,7 +124,6 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 		p, err := rt.db.GetProfile(u.Id)
 
 		if err != nil {
-			fmt.Print(err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
