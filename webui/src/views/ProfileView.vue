@@ -46,7 +46,6 @@ export default {
             { headers: { Authorization: this.myID } });
           this.profile = response.data;
         }
-        console.log(this.profile)
         this.amIBanned()
       }
       catch (e) {

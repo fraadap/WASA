@@ -22,7 +22,6 @@ export default {
                 let response = await this.$axios.get('/users/' + this.myID,
                     { headers: { Authorization: this.myID } });
                 this.profile = response.data;
-                console.log(this.profile)
 
             } catch (e) {
                 this.errormsg = e.toString();
@@ -30,7 +29,6 @@ export default {
             this.loading = false;
         },
         async setUsername() {
-            console.log(this.newUsername)
             try {
                 let response = await this.$axios.put('/users/' + this.myID,
                     {
@@ -42,7 +40,6 @@ export default {
                     },
                 );
                 this.msg = "Username changed succesfully"
-                console.log(response)
             }
             catch (e) {
                 this.errormsg = "Username already used, re-try"

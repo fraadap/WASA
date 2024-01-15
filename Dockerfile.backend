@@ -1,0 +1,28 @@
+## Come creare l'immagine:
+## docker build -t backend:latest -f Dockerfile.backend .
+
+## Come eseguire l'immagine:
+## docker run -it --rm -p 3000:3000 backend:latest
+
+# Creazione di un container temporaneo dal compilatore di go
+FROM golang:1.19.1 AS builder
+
+# Copia del codice Go 
+WORKDIR /src/
+COPY . .
+
+# Build dell'eseguibile
+RUN go build -o /app/webapi ./cmd/webapi
+
+# Creazione del container definitivo
+FROM debian:bullseye
+
+# Specifica della porta che si userà
+EXPOSE 3000
+
+# Copia dell'eseguibile dall'immagine build
+WORKDIR /app/
+COPY --from=builder /app/webapi ./
+
+# Programma eseguibile
+CMD ["/app/webapi"]

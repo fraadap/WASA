@@ -28,7 +28,6 @@ export default {
 				let response = await this.$axios.get("/users/" + this.myID + "/photos",
 					{ headers: { Authorization: this.myID } });
 				this.stream = response.data;
-				console.log(this.stream)
 				this.username = this.stream.user.username
 
 			} catch (e) {

@@ -17,7 +17,6 @@ export default {
           username: this.username
         });
         localStorage.setItem("token", response.data)
-        console.log("ID logged: " + response.data)
         this.$router.push({ path: '/home' });
 
       }
