@@ -21,7 +21,7 @@ props:["mine","profile"],
         <!-- Photo -->
 
         <!-- Photo -->
-    <div class="col-md-4 mb-3" v-for="ph in profile.photos">
+    <div class="col-md-4 mb-3" v-for="ph in profile.photos" :key="ph.photo.photoID">
       <div class="custom-square">
         <div class="custom-content">
           <div class="image-wrapper">

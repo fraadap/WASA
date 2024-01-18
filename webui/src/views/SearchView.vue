@@ -60,7 +60,7 @@ export default {
         <input type="text" id="searchInput" v-model="inputSearch" v-on:keyup="this.search()" class="form-control mb-4"
             placeholder="Cerca utenti..." style="width:20%">
 
-        <div class="card user-card my-3" v-for="u in users" v-if="users!=null" u.user.userID>
+        <div class="card user-card my-3" v-for="u in users" v-if="users!=null" :key="u.user.userID">
             <RouterLink :to="'/profile/' + u.user.userID" class="nav-link" :us="u.user.userID">
                 <div class="card-body">
                     <div class="container mt-3 text-center">
