@@ -1,5 +1,5 @@
 <script>
-import { RouterLink } from 'vue-router';
+
 
 export default {
   data: function () {
@@ -25,7 +25,6 @@ export default {
       }
     },
   },
-  components: { RouterLink }
 }
 </script>
 
