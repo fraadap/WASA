@@ -33,7 +33,6 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	// conversione del body in struct comment
 	err0 := json.Unmarshal(body, &com)
 
-	// controllo se l'utente è bannato dalla persona proprietaria della photo
 	if err0 != nil || com.Text == "" || com.User.Id == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		return

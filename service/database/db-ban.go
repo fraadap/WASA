@@ -48,7 +48,7 @@ func (db *appdbimpl) IsBanned(userID int, bannedID int) (bool, error) {
 	if err != nil {
 		return ban, err
 	}
-	return false, nil
+	return ban, nil
 }
 
 func (db *appdbimpl) GetBanID(id int, banned int) (int, error) {

@@ -14,11 +14,13 @@ export default {}
 		</button>
 	</header>
 
-	<div class="container-fluid">
-		<div class="row" v-if="$route.path != '/'"> <!-- Se non sto nella pagina iniziale carica la navbar-->
-			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="background: linear-gradient( #063ca7, #933af9);">
+	<div class="container-fluid" v-if="$route.path != '/'"> <!-- Se non sto nella pagina iniziale carica la navbar-->
+		<div class="row"> 
+			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse"
+				style="background: linear-gradient( #063ca7, #933af9);">
 				<div>
-					<h6 class="sidebar-heading d-flex text-center justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+					<h6
+						class="sidebar-heading d-flex text-center justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
 						<h2 style="color:white;">Menu</h2>
 					</h6>
 
@@ -56,7 +58,7 @@ export default {}
 					</div>
 					<div class="h-25 w-100 my-4">
 						<RouterLink :to="'/profile/0'" class="nav-link" :us="0">
-							<div class="d-flex align-items-end" >
+							<div class="d-flex align-items-end">
 								<svg :fill="'none'" stroke="white" style="height:100px">
 									<use href="/feather-sprite-v4.29.0.svg#user" />
 								</svg>
@@ -71,9 +73,9 @@ export default {}
 				<RouterView />
 			</main>
 		</div>
-		<div v-else> <!-- ALtrimenti carica solo la parte di login -->
-			<RouterView />
-		</div>
+	</div>
+	<div v-else> <!-- ALtrimenti carica solo la parte di login -->
+		<RouterView />
 	</div>
 </template>
 

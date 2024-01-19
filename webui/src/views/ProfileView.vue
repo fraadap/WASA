@@ -576,7 +576,7 @@ export default {
       </div>
     </div>
   </div>
-  <ErrorMsg v-else :msg='"Ops! Its seem like you are banned from the user " + profile.user.username + " :("'></ErrorMsg>
+  <ErrorMsg v-else :msg='"Ops! It seems like you are banned from the user " + profile.user.username + " :("'></ErrorMsg>
 </template>
 
 <style>

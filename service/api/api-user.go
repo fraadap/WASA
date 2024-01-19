@@ -121,6 +121,15 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 		if u.Id == token {
 			continue
 		}
+		if banned, er1 := rt.db.IsBanned(u.Id, token); banned {
+			if er1 != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			} else {
+				continue
+			}
+		}
+
 		p, err := rt.db.GetProfile(u.Id)
 
 		if err != nil {
