@@ -349,13 +349,19 @@ export default {
           <p>{{ this.profile.followings ? this.profile.followings.length : 0 }}</p>
         </div>
         <div class="col fs-5">
-          <div class="p-2 bd-highlight" v-if="this.us != this.myID && this.us != 0">
-            <button type="button" class="btn btn-outline-success me-3" @click="follow(this.us)"
-              v-if="isFollowed(this.us) == false">Follow</button>
-            <button v-else type="button" class="btn btn-primary me-3" @click="unfollow(this.us)"> Followed </button>
-            <button type="button" class="btn btn-outline-danger" v-if="isBanned(this.us) == false"
-              @click="ban(this.us)">Ban</button>
-            <button type="button" class="btn btn-outline-danger" v-else @click="unban(this.us)">Banned</button>
+          <div class="p-2 bd-highlight row" v-if="this.us != this.myID && this.us != 0">
+            <div v-if="isFollowed(this.us) == false" class="col">
+              <button type="button" class="btn btn-outline-success me-3" @click="follow(this.us)">Follow</button>
+            </div>
+            <div v-else class="col">
+              <button type="button" class="btn btn-primary me-3" @click="unfollow(this.us)"> Followed </button>
+            </div>
+            <div v-if="isBanned(this.us) == false" class="col">
+              <button type="button" class="btn btn-outline-danger" @click="ban(this.us)">Ban</button>
+            </div>
+            <div v-else class="col">
+              <button type="button" class="btn btn-outline-danger" @click="unban(this.us)">Banned</button>
+            </div>
           </div>
           <div class="p-2 bd-highlight" v-else> <!-- Nuova foto -->
             <button class="btn btn-success fs-3" data-toggle="modal" data-target="#addPhotoModal">+</button>
@@ -443,7 +449,8 @@ export default {
               <div class="row">
                 <div class="col">
 
-                  <div class="card mb-3" v-for="user in this.profile.followers" v-if="this.profile.followers != null" :key="user.userID">
+                  <div class="card mb-3" v-for="user in  this.profile.followers " v-if="this.profile.followers != null"
+                    :key="user.userID">
                     <div class="card-body d-flex align-items-center justify-content-between">
                       <div class="me-5 p-2 bd-highlight">
                         <RouterLink :to="'/profile/' + user.userID" class="nav-link" :us="user.userID"
@@ -451,15 +458,21 @@ export default {
                           <h5 class="card-title">{{ user.username }}</h5>
                         </RouterLink>
                       </div>
-                      <div class="p-2 bd-highlight" v-if="user.userID != this.myID && user.userID != 0">
-                        <button type="button" class="btn btn-outline-success me-3" @click="follow(user.userID)"
-                          v-if="isFollowed(user.userID) == false">Follow</button>
-                        <button v-else type="button" class="btn btn-primary me-3" @click="unfollow(user.userID)"> Followed
-                        </button>
-                        <button type="button" class="btn btn-outline-danger" v-if="isBanned(user.userID) == false"
-                          @click="ban(user.userID)">Ban</button>
-                        <button type="button" class="btn btn-outline-danger" v-else
-                          @click="unban(user.userID)">Banned</button>
+                      <div class="p-2 bd-highlight row" v-if="user.userID != this.myID && user.userID != 0">
+                        <div class="col" v-if="isFollowed(user.userID) == false">
+                          <button type="button" class="btn btn-outline-success me-3"
+                            @click="follow(user.userID)">Follow</button>
+                        </div>
+                        <div class="col" v-else>
+                          <button type="button" class="btn btn-primary me-3" @click="unfollow(user.userID)">
+                            Followed</button>
+                        </div>
+                        <div v-if="isBanned(user.userID) == false" class="col">
+                          <button type=" button" class="btn btn-outline-danger" @click=" ban(user.userID)">Ban</button>
+                        </div>
+                        <div class="col" v-else>
+                          <button type="button" class="btn btn-outline-danger" @click="unban(user.userID)">Banned</button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -494,7 +507,8 @@ export default {
                 <div class="col">
 
 
-                  <div class="card mb-3" v-for="user in this.profile.followings" v-if="this.profile.followings != null" :key="user.userID">
+                  <div class="card mb-3" v-for=" user  in  this.profile.followings "
+                    v-if="this.profile.followings != null" :key="user.userID">
                     <div class="card-body d-flex align-items-center justify-content-between">
                       <div class="me-5 p-2 bd-highlight">
                         <RouterLink :to="'/profile/' + user.userID" class="nav-link" :us="user.userID"
@@ -502,15 +516,21 @@ export default {
                           <h5 class="card-title">{{ user.username }}</h5>
                         </RouterLink>
                       </div>
-                      <div class="p-2 bd-highlight" v-if="user.userID != this.myID">
-                        <button type="button" class="btn btn-outline-success me-3" @click="follow(user.userID)"
-                          v-if="isFollowed(user.userID) == false">Follow</button>
-                        <button v-else type="button" class="btn btn-primary me-3" @click="unfollow(user.userID)"> Followed
-                        </button>
-                        <button type="button" class="btn btn-outline-danger" v-if="isBanned(user.userID) == false"
-                          @click="ban(user.userID)">Ban</button>
-                        <button type="button" class="btn btn-outline-danger" v-else
-                          @click="unban(user.userID)">Banned</button>
+                      <div class="p-2 bd-highlight row" v-if="user.userID != this.myID">
+                        <div class="col" v-if="isFollowed(user.userID) == false">
+                          <button type="button" class="btn btn-outline-success me-3"
+                            @click="follow(user.userID)">Follow</button>
+                        </div>
+                        <div class="col" v-else>
+                          <button type="button" class="btn btn-primary me-3" @click="unfollow(user.userID)"> Followed
+                          </button>
+                        </div>
+                        <div class="col" v-if="isBanned(user.userID) == false">
+                          <button type="button" class="btn btn-outline-danger" @click="ban(user.userID)">Ban</button>
+                        </div>
+                        <div class="col" v-else>
+                          <button type="button" class="btn btn-outline-danger" @click="unban(user.userID)">Banned</button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -541,7 +561,7 @@ export default {
           </div>
           <div class="modal-body overflow-auto">
 
-            <div class="mb-3 card" v-for="c in modalComments.comments" :key="c.commentID">
+            <div class="mb-3 card" v-for=" c  in  modalComments.comments " :key="c.commentID">
               <div class="container">
                 <div class="row p-1">
 
@@ -553,7 +573,8 @@ export default {
                     </RouterLink>
                     <div class="col" v-if="c.user.userID == this.myID">
                       <button type="button" class="btn btn-outline-danger delete-btn"
-                        @click="this.deleteComment(c)">Delete comment</button>
+                        @click="this.deleteComment(c)">Delete
+                        comment</button>
                     </div>
                   </div>
                 </div>
