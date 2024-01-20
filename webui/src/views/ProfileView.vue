@@ -328,8 +328,9 @@ export default {
 </script>
 
 <template>
-  <Msg :msg="this.msg" v-if="this.msg"></Msg>
-
+  <div v-if="this.msg">
+    <Msg :msg="this.msg"></Msg>
+  </div>
   <div v-if="!this.imBanned">
     <div class="container mt-5 text-center">
       <div class="row">

@@ -94,8 +94,12 @@ export default {
 </script>
 
 <template>
-    <ErrorMsg v-if="this.errormsg" :msg="this.errormsg"></ErrorMsg>
-    <Msg v-if="this.msg" :msg="this.msg"></Msg>
+    <div v-if="this.errormsg">
+        <ErrorMsg :msg="this.errormsg"></ErrorMsg>
+    </div>
+    <div v-if="this.msg">
+        <Msg :msg="this.msg"></Msg>
+    </div>
     <div class="container h-100">
         <div class="row h-100 justify-content-center align-items-center p-3">
             <div class="col-6">
@@ -141,14 +145,15 @@ export default {
                             <div class="col">
 
 
-                                <div class="card mb-3" v-for="user in this.profile.bans" v-if="this.profile.bans != null" :key="user.userID">
+                                <div class="card mb-3" v-for="user in this.profile.bans" v-if="this.profile.bans != null"
+                                    :key="user.userID">
                                     <div class="card-body d-flex align-items-center justify-content-between">
                                         <div class="me-5 p-2 bd-highlight">
                                             <h5 class="card-title">{{ user.username }}</h5>
                                         </div>
                                         <div class="p-2 bd-highlight">
                                             <button type="button" class="btn btn-outline-danger"
-                                            @click="unban(user.userID)">Delete ban</button>
+                                                @click="unban(user.userID)">Delete ban</button>
 
                                         </div>
                                     </div>
