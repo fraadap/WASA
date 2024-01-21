@@ -144,17 +144,17 @@ export default {
                         <div class="row">
                             <div class="col">
 
+                                <div v-if="this.profile.bans != null">
+                                    <div class="card mb-3" v-for="user in this.profile.bans" :key="user.userID">
+                                        <div class="card-body d-flex align-items-center justify-content-between">
+                                            <div class="me-5 p-2 bd-highlight">
+                                                <h5 class="card-title">{{ user.username }}</h5>
+                                            </div>
+                                            <div class="p-2 bd-highlight">
+                                                <button type="button" class="btn btn-outline-danger"
+                                                    @click="unban(user.userID)">Delete ban</button>
 
-                                <div class="card mb-3" v-for="user in this.profile.bans" v-if="this.profile.bans != null"
-                                    :key="user.userID">
-                                    <div class="card-body d-flex align-items-center justify-content-between">
-                                        <div class="me-5 p-2 bd-highlight">
-                                            <h5 class="card-title">{{ user.username }}</h5>
-                                        </div>
-                                        <div class="p-2 bd-highlight">
-                                            <button type="button" class="btn btn-outline-danger"
-                                                @click="unban(user.userID)">Delete ban</button>
-
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

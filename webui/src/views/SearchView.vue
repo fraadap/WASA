@@ -58,31 +58,32 @@ export default {
 
         <input type="text" id="searchInput" v-model="inputSearch" v-on:keyup="this.search()" class="form-control mb-4"
             placeholder="Cerca utenti..." style="width:20%">
-
-        <div class="card user-card my-3" v-for="u in users" v-if="users!=null" :key="u.user.userID">
-            <RouterLink :to="'/profile/' + u.user.userID" class="nav-link" :us="u.user.userID">
-                <div class="card-body">
-                    <div class="container mt-3 text-center">
-                        <div class="row">
-                            <div class="col fs-3">
-                                <p>{{ u.user.username }}</p>
-                            </div>
-                            <div class="col fs-5">
-                                <p>Photos</p>
-                                <p>{{ u.nPhotos }}</p>
-                            </div>
-                            <div class="col fs-5">
-                                <p>Followers</p>
-                                <p>{{ u.followers ? u.followers.length : 0 }}</p>
-                            </div>
-                            <div class="col fs-5">
-                                <p>Followings</p>
-                                <p>{{ u.followings ? u.followings.length : 0 }}</p>
+        <div v-if="users != null">
+            <div class="card user-card my-3" v-for="u in users" :key="u.user.userID">
+                <RouterLink :to="'/profile/' + u.user.userID" class="nav-link" :us="u.user.userID">
+                    <div class="card-body">
+                        <div class="container mt-3 text-center">
+                            <div class="row">
+                                <div class="col fs-3">
+                                    <p>{{ u.user.username }}</p>
+                                </div>
+                                <div class="col fs-5">
+                                    <p>Photos</p>
+                                    <p>{{ u.nPhotos }}</p>
+                                </div>
+                                <div class="col fs-5">
+                                    <p>Followers</p>
+                                    <p>{{ u.followers ? u.followers.length : 0 }}</p>
+                                </div>
+                                <div class="col fs-5">
+                                    <p>Followings</p>
+                                    <p>{{ u.followings ? u.followings.length : 0 }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </RouterLink>
+                </RouterLink>
+            </div>
         </div>
         <LoadingSpinner :loading="this.loading"></LoadingSpinner>
     </div>
