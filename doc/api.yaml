@@ -75,7 +75,7 @@ paths:
       summary: 'Get User Profile'
       description: 'Get a user profile by userID'
       responses:
-        '201':
+        '200':
           description: 'user returned'
           content:
             application/json:
@@ -115,8 +115,67 @@ paths:
         '404':
           description: 'userID not found'
 
+
+  /users/{userID}/username:
+    get:
+      tags:
+        - user
+      operationId: getUsernameByID
+      summary: 'Get Username by ID'
+      description: 'Get a username profile by userID'
+      parameters:
+      - name: userID
+        description: 'User Identifier'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      responses:
+        '200':
+          description: 'username returned'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User/properties/username'
+        '400':
+          description: 'Invalid userID'
+        '404':
+          description: 'userID not found'  
+
+  /search/{text}:
+    get:
+      tags:
+        - user
+      operationId: searchUsers
+      summary: 'search users'
+      description: 'Search users by their username'
+      parameters:
+      - name: text
+        description: 'Text for searching users'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/username'
+
+      responses:
+        '200':
+          description: 'List of users profiles returned'
+          content:
+            application/json:
+              schema:
+                type: array
+                description: "list of user profiles"
+                minItems: 0
+                maxItems: 2000
+                items:
+                  $ref: '#/components/schemas/Profile'
+        '400':
+          description: 'Invalid userID'
+        '404':
+          description: 'userID not found'
+
   /users/{userID}/follow:
-    post:
+    put:
       tags: 
         - follow
       operationId: followUser
@@ -174,6 +233,38 @@ paths:
           description: 'Follow relationship not found'
         '400':
           description: 'Bad request - Invalid data provided'
+
+  /users/{userID}/followID/{followed}:
+    get:
+      tags: 
+        - follow
+      operationId: getFollowId
+      summary: 'get follow id'
+      description: 'returns the follow id by the userID of the user followed'
+      parameters:
+      - name: userID
+        description: 'User Identifier of owner follow'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      - name: followed
+        description: 'User Identifier of user followed'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      responses:
+        '201':
+          description: 'Follow data structure returned'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/Follow'
+        '400':
+          description: 'Bad request - Invalid data provided'
+        '403':
+          description: 'Forbidden - user banned'
 
   /users/{userID}/photos:
     parameters:
@@ -324,7 +415,7 @@ paths:
           description: 'userID, photoID or commentID not found'     
 
   /users/{userID}/photos/{photoID}/likes:
-    post:
+    put:
       tags:
         - like
       operationId: likePhoto
@@ -396,7 +487,7 @@ paths:
           description: 'UserID, PhotoID or LikeID not found'
 
   /users/{userID}/bans:
-    post:
+    put:
       tags: 
         - ban
       operationId: banUser
@@ -452,7 +543,39 @@ paths:
           description: 'Bad request - Invalid data provided'
         '404':
           description: 'UserID or banID not found'
-  
+
+  /users/{userID}/banID/{banned}:
+    get:
+      tags: 
+        - ban
+      operationId: getBanId
+      summary: 'get ban id'
+      description: 'returns the ban id by the userID of the user banned'
+      parameters:
+      - name: userID
+        description: 'User Identifier of owner ban'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      - name: banned
+        description: 'User Identifier of user banned'
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/User/properties/userID'
+      responses:
+        '201':
+          description: 'Ban data structure returned'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/Ban'
+        '400':
+          description: 'Bad request - Invalid data provided'
+
+
+
 components:
   schemas:
     User:
