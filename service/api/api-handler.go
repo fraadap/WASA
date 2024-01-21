@@ -18,7 +18,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/search/:text", rt.wrap(rt.searchUsers)) // riportato nell'api
 
 	// followers section
-	rt.router.PUT("/users/:userID/follow", rt.wrap(rt.followUser))                // 3)fatto
+	rt.router.POST("/users/:userID/follow", rt.wrap(rt.followUser))               // 3)fatto
 	rt.router.DELETE("/users/:userID/follow/:followID", rt.wrap(rt.unfollowUser)) // 4)fatto
 	rt.router.GET("/users/:userID/followID/:followed", rt.wrap(rt.getFollowID))   // riportato nell'api
 
@@ -32,11 +32,11 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/users/:userID/photos/:photoID/comments/:commentID", rt.wrap(rt.uncommentPhoto)) // 10)fatto
 
 	// likes section
-	rt.router.PUT("/users/:userID/photos/:photoID/likes", rt.wrap(rt.likePhoto))              // 11)fatto
+	rt.router.POST("/users/:userID/photos/:photoID/likes", rt.wrap(rt.likePhoto))             // 11)fatto
 	rt.router.DELETE("/users/:userID/photos/:photoID/likes/:likeID", rt.wrap(rt.unlikePhoto)) // 12)fatto
 
 	// bans section
-	rt.router.PUT("/users/:userID/bans", rt.wrap(rt.banUser))             // 5) fatto
+	rt.router.POST("/users/:userID/bans", rt.wrap(rt.banUser))            // 5) fatto
 	rt.router.DELETE("/users/:userID/bans/:banID", rt.wrap(rt.unbanUser)) // 6) fatto
 	rt.router.GET("/users/:userID/banID/:banned", rt.wrap(rt.getBanID))   // riportato nell'api
 

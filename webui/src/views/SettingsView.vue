@@ -30,7 +30,7 @@ export default {
         },
         async setUsername() {
             try {
-                let response = await this.$axios.put('/users/' + this.myID,
+                await this.$axios.put('/users/' + this.myID,
                     {
                         userID: this.myID,
                         username: this.newUsername,

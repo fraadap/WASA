@@ -127,7 +127,7 @@ export default {
     },
     async follow(id) {
       try {
-        await this.$axios.put('/users/' + this.myID + "/follow", {
+        await this.$axios.post('/users/' + this.myID + "/follow", {
           followed: id,
         },
           {
@@ -143,7 +143,7 @@ export default {
     },
     async ban(id) {
       try {
-        await this.$axios.put('/users/' + this.myID + "/bans", {
+        await this.$axios.post('/users/' + this.myID + "/bans", {
           banned: id,
         },
           {
@@ -211,7 +211,7 @@ export default {
       else {
 
         try {
-          await this.$axios.put('/users/' + ph.photo.user.userID + "/photos/" + ph.photo.photoID + "/likes", {
+          await this.$axios.post('/users/' + ph.photo.user.userID + "/photos/" + ph.photo.photoID + "/likes", {
             userID: parseInt(this.myID),
             photoID: ph.photo.photoID,
           },

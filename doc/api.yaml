@@ -175,7 +175,7 @@ paths:
           description: 'userID not found'
 
   /users/{userID}/follow:
-    put:
+    post:
       tags: 
         - follow
       operationId: followUser
@@ -415,7 +415,7 @@ paths:
           description: 'userID, photoID or commentID not found'     
 
   /users/{userID}/photos/{photoID}/likes:
-    put:
+    post:
       tags:
         - like
       operationId: likePhoto
@@ -487,7 +487,7 @@ paths:
           description: 'UserID, PhotoID or LikeID not found'
 
   /users/{userID}/bans:
-    put:
+    post:
       tags: 
         - ban
       operationId: banUser

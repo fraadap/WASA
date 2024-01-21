@@ -126,7 +126,7 @@ export default {
 			else {
 
 				try {
-					let response = await this.$axios.put('/users/' + ph.photo.user.userID + "/photos/" + ph.photo.photoID + "/likes", {
+					let response = await this.$axios.post('/users/' + ph.photo.user.userID + "/photos/" + ph.photo.photoID + "/likes", {
 						userID: parseInt(this.myID),
 						photoID: ph.photo.photoID,
 					},
