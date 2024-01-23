@@ -113,33 +113,6 @@ paths:
         '400':
           description: 'Invalid userID or username already took'
         '404':
-          description: 'userID not found'
-
-
-  /users/{userID}/username:
-    get:
-      tags:
-        - user
-      operationId: getUsernameByID
-      summary: 'Get Username by ID'
-      description: 'Get a username profile by userID'
-      parameters:
-      - name: userID
-        description: 'User Identifier'
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/User/properties/userID'
-      responses:
-        '200':
-          description: 'username returned'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User/properties/username'
-        '400':
-          description: 'Invalid userID'
-        '404':
           description: 'userID not found'  
 
   /search/{text}:

@@ -10,10 +10,9 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/", rt.getHelloWorld)
 
 	// users section
-	rt.router.POST("/session", rt.wrap(rt.doLogin))                       // 1)fatto, manca la parte di sicurezza con variabile di sessione
-	rt.router.GET("/users/:userID", rt.wrap(rt.getUserProfile))           // 13)fatto
-	rt.router.PUT("/users/:userID", rt.wrap(rt.setMyUsername))            // 2)fatto
-	rt.router.GET("/users/:userID/username", rt.wrap(rt.getUsernameByID)) // riportato nell'api
+	rt.router.POST("/session", rt.wrap(rt.doLogin))             // 1)fatto, manca la parte di sicurezza con variabile di sessione
+	rt.router.GET("/users/:userID", rt.wrap(rt.getUserProfile)) // 13)fatto
+	rt.router.PUT("/users/:userID", rt.wrap(rt.setMyUsername))  // 2)fatto
 
 	rt.router.GET("/search/:text", rt.wrap(rt.searchUsers)) // riportato nell'api
 

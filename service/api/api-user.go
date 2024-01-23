@@ -79,29 +79,6 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	}
 }
 
-func (rt *_router) getUsernameByID(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	id, err := strconv.Atoi(ps.ByName("userID"))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	username, err1 := rt.db.GetUsername(id)
-	if err1 != nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	er1 := json.NewEncoder(w).Encode(username)
-	if er1 != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-}
-
 func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	text := ps.ByName("text")
